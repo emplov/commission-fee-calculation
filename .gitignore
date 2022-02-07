@@ -1,0 +1,6 @@
+# Excluded folders.
+.idea/
+vendor/
+
+# Excluded files.
+composer.lock
