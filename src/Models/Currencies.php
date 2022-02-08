@@ -33,4 +33,14 @@ class Currencies
 
         return $amount;
     }
+
+    /**
+     * @param string $currency
+     * @param float $price
+     * @return void
+     */
+    public static function setRate(string $currency, float $price)
+    {
+        self::$currencies_rate[$currency] = $price;
+    }
 }

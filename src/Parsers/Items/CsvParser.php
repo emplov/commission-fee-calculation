@@ -8,7 +8,7 @@ use CommissionFeeCalculation\Parsers\Contracts\Parser;
 
 class CsvParser implements Parser
 {
-    private string $filename;
+    private string $filepath;
 
     private string $separator;
 
@@ -19,9 +19,9 @@ class CsvParser implements Parser
     /**
      * @inheritDoc
      */
-    public function __construct(string $filename, string $separator, string $enclosure = null, string $escape = null)
+    public function __construct(string $filepath, string $separator, string $enclosure = null, string $escape = null)
     {
-        $this->filename = $filename;
+        $this->filepath = $filepath;
         $this->separator = $separator;
         $this->enclosure = $enclosure;
         $this->escape = $escape;
@@ -32,7 +32,7 @@ class CsvParser implements Parser
      */
     public function parse(): bool
     {
-        $fileResource = File::openFile(CURRENT_PATH . '/' . $this->filename);
+        $fileResource = File::openFile($this->filepath);
 
         while (($data = fgetcsv($fileResource, 1000, $this->separator, $this->enclosure, $this->escape)) !== false) {
             Commission::addData($data[0], $data[1], $data[2], $data[3], $data[4], $data[5]);
