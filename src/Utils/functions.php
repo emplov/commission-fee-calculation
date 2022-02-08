@@ -7,7 +7,7 @@ if (!function_exists('dd')) {
 }
 
 if (!function_exists('config')) {
-    function config(string $path) {
-        return \CommissionFeeCalculation\Models\Config::get($path);
+    function config(string $path, mixed $default = null) {
+        return \CommissionFeeCalculation\Models\Config::get($path, $default);
     }
 }
