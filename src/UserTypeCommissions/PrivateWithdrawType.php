@@ -25,37 +25,57 @@ class PrivateWithdrawType extends TypeAbstract
      */
     public static function handle(int $userKey, float $amount, string $currency, array $extra = []): void
     {
-        $lastWithdrawDate = Commission::$data[$userKey]['last_withdraw_date'];
-
         $withdrawalDate = Carbon::make($extra['date']);
-
-        $amountToCharge = $amount;
 
         $dayOfTheWeek = $withdrawalDate->dayOfWeek;
 
-        self::getFromList($userKey, $amount, $currency);
+        $subDays = $dayOfTheWeek - 1;
 
-        $monday = Carbon::make($extra['date'])->subDays($dayOfTheWeek - 1);
-        $sunday = Carbon::make($extra['date'])->addDays(7 - $dayOfTheWeek);
+        $monday = Carbon::make($extra['date']);
 
-        foreach (self::$commissions[$userKey] as $commission) {
-            $sum = 0;
+        if ($subDays != 0) {
+            $monday->subDays($subDays);
+        }
 
-            if (
-                $commission['start_date'] == $monday->format('Y-m-d') &&
-                $commission['end_date'] == $sunday->format('Y-m-d')
-            ) {
+        $addDays = 7 - $dayOfTheWeek;
 
+        $sunday = Carbon::make($extra['date'])->addDays();
+
+        if ($addDays) {
+            $sunday->addDays($addDays);
+        }
+
+        $sum = 0;
+
+        if (isset(self::$commissions[$userKey])) {
+            foreach (self::$commissions[$userKey] as $commission) {
+                if (Commission::$data[$userKey]['user_id'] == '1') {
+                    var_dump(
+                        $commission['start_date'],
+                        $commission['end_date'],
+                        $commission['withdrawal_date'],
+                        $commission['amount'],
+                        $commission['free_amount'],
+                    );
+//                    var_dump($monday->format('Y-m-d'), $sunday->format('Y-m-d'));
+                    echo '-------------' . PHP_EOL;
+                }
+
+                if (
+                    $commission['start_date'] == $monday->format('Y-m-d') &&
+                    $commission['end_date'] == $sunday->format('Y-m-d')
+                ) {
+                    $sum += $commission['free_amount'];
+                }
             }
         }
 
-        if (!is_null($lastWithdrawDate) && !$withdrawalDate->isSameWeek($lastWithdrawDate)) {
-            [$amountInEur, $amountToCharge, $freeFee] = self::removeFreeAmountFee($amount, $currency);
-        } elseif (is_null($lastWithdrawDate)) {
-            [$amountInEur, $amountToCharge, $freeFee] = self::removeFreeAmountFee($amount, $currency);
-        } else {
-            $amountInEur = Currencies::currencyToEur($amount, $currency);
-        }
+//        if (Commission::$data[$userKey]['user_id'] == '1') {
+//            var_dump($amount, $currency, $sum, $withdrawalDate->format('Y-m-d'));
+//            echo '----------' . PHP_EOL;
+//        }
+
+        [$amountInEur, $amountToCharge, $freeFee] = self::removeFreeAmountFee($amount, $currency, $sum);
 
         self::$commissions[$userKey][] = [
             'withdrawal_date' => $withdrawalDate->format('Y-m-d'),
@@ -67,7 +87,9 @@ class PrivateWithdrawType extends TypeAbstract
             'currency' => $currency,
         ];
 
-        Commission::addResult(self::castToStandartFormat(($amountToCharge * 0.3 / 100)));
+        $res = self::castToStandartFormat(($amountToCharge * 0.3 / 100));
+
+        Commission::addResult($res);
 
         // Save last withdraw date
         Commission::$data[$userKey]['last_withdraw_date'] = $extra['date'];
@@ -76,18 +98,31 @@ class PrivateWithdrawType extends TypeAbstract
     /**
      * @param float $amount
      * @param string $currency
+     * @param float $usedWeekFreeFeeAmount
      * @return array
      */
-    private static function removeFreeAmountFee(float $amount, string $currency): array
+    private static function removeFreeAmountFee(float $amount, string $currency, float $usedWeekFreeFeeAmount): array
     {
         $amountInEur = Currencies::currencyToEur($amount, $currency);
 
-        if ($amountInEur > 1000) {
-            $amount -= (1000 * Currencies::$currencies_rate[$currency]);
-            $feeToChargeInEur = (1000);
-        } else {
-            $feeToChargeInEur = $amountInEur;
+        $weekFreeFeeAmount = config('week_free_fee_amount');
+
+        if ($usedWeekFreeFeeAmount >= $weekFreeFeeAmount) {
+            return [
+                $amountInEur,
+                $amount,
+                0,
+            ];
+        }
+
+        $freeFee = $weekFreeFeeAmount - $usedWeekFreeFeeAmount;
+
+        if ($amountInEur <= $freeFee) {
             $amount = 0;
+            $feeToChargeInEur = $amountInEur;
+        } else {
+            $amount -= ($freeFee * Currencies::$currencies_rate[$currency]);
+            $feeToChargeInEur = $freeFee;
         }
 
         return [
@@ -107,12 +142,15 @@ class PrivateWithdrawType extends TypeAbstract
     {
         $arr = [];
 
-        foreach (self::$commissions[$userKey] as $commission) {
-            if ($start_date == $commission['start_date'] && $end_date == $commission['end_date']) {
-                $arr[] = $commission;
+        if (isset(self::$commissions[$userKey])) {
+            foreach (self::$commissions[$userKey] as $commission) {
+                if ($start_date == $commission['start_date'] && $end_date == $commission['end_date']) {
+                    $arr[] = $commission;
+                }
             }
         }
 
         return $arr;
     }
+
 }
