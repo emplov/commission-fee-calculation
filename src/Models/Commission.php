@@ -2,27 +2,11 @@
 
 namespace CommissionFeeCalculation\Models;
 
-use CommissionFeeCalculation\UserTypeCommissions\PrivateDepositType;
-use CommissionFeeCalculation\UserTypeCommissions\BusinessDepositType;
-use CommissionFeeCalculation\UserTypeCommissions\PrivateWithdrawType;
-use CommissionFeeCalculation\UserTypeCommissions\BusinessWithdrawType;
-
 class Commission
 {
     public static array $data = [];
 
     private static array $result = [];
-
-    private static array $userTypes = [
-        'private' => [
-            PrivateDepositType::class,
-            PrivateWithdrawType::class,
-        ],
-        'business' => [
-            BusinessDepositType::class,
-            BusinessWithdrawType::class,
-        ],
-    ];
 
     /**
      * @param string $date
@@ -88,7 +72,7 @@ class Commission
         ];
 
 //         Withdrawal check statements
-        foreach (self::$userTypes[$userType] as $type) {
+        foreach (config('user_types')[$userType] as $type) {
             if (mb_strtolower($type::type()) == mb_strtolower($userType . '_withdraw')) {
                 $type::handle($userKey, $operationAmount, $operationCurrency, [
                     'date' => $date,
@@ -120,7 +104,7 @@ class Commission
         ];
 
         // Deposit check statements
-        foreach (self::$userTypes[$userType] as $type) {
+        foreach (config('user_types')[$userType] as $type) {
             if (mb_strtolower($type::type()) == mb_strtolower($userType . '_deposit')) {
                 $type::handle($userKey, $operationAmount, $operationCurrency, [
                     'date' => $date,

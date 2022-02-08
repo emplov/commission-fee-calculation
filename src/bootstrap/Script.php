@@ -2,6 +2,7 @@
 
 namespace CommissionFeeCalculation\Bootstrap;
 
+use CommissionFeeCalculation\Models\Config;
 use CommissionFeeCalculation\Services\File;
 use CommissionFeeCalculation\Services\Dispatcher;
 
@@ -23,7 +24,9 @@ final class Script
         private string $separator = ',',
         private string $enclosure = '"',
         private string $escape = '\\',
-    ){}
+    ){
+        Config::setConfig(require FILE_PATH . '/config.php');
+    }
 
     /**
      * Run application

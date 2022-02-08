@@ -5,8 +5,6 @@ namespace CommissionFeeCalculation\Services;
 use CommissionFeeCalculation\Models\Commission;
 use CommissionFeeCalculation\Models\Currencies;
 use CommissionFeeCalculation\Parsers\Contracts\Parser;
-use CommissionFeeCalculation\Parsers\Facades\TxtItemAbstract;
-use CommissionFeeCalculation\Parsers\Facades\CsvItemAbstract;
 
 class Dispatcher
 {
@@ -19,14 +17,6 @@ class Dispatcher
     private string $escape;
 
     private string $extension;
-
-    /**
-     * @var array|string[]
-     */
-    public array $accessibleTypes = [
-        CsvItemAbstract::class,
-        TxtItemAbstract::class,
-    ];
 
     /**
      * @param string $filename
@@ -101,7 +91,7 @@ class Dispatcher
      */
     public function checkExtensionTypeAndGetParser(string $extension): ?Parser
     {
-        foreach ($this->accessibleTypes as $accessibleType) {
+        foreach (config('accessible_types') as $accessibleType) {
             if ($extension === $accessibleType::extension()) {
                 return $accessibleType::getParser(
                     $this->filename,
