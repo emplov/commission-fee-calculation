@@ -18,9 +18,6 @@ class Currencies
         $data = json_decode($data, true);
 
         self::$currencies_rate = $data['rates'];
-
-        self::$currencies_rate['USD'] = 1.1497;
-        self::$currencies_rate['JPY'] = 129.53;
     }
 
     /**
@@ -31,7 +28,7 @@ class Currencies
     public static function currencyToEur(float $amount, string $currencyType): float
     {
         if (mb_strtolower($currencyType) != 'eur') {
-            $amount = $amount * Currencies::$currencies_rate[$currencyType];
+            $amount /= Currencies::$currencies_rate[$currencyType];
         }
 
         return $amount;

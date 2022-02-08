@@ -21,5 +21,6 @@ return [
             BusinessDepositType::class,
             BusinessWithdrawType::class,
         ],
-    ]
+    ],
+    'week_free_fee_amount' => 1000,
 ];
