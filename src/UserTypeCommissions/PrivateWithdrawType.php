@@ -27,23 +27,9 @@ class PrivateWithdrawType extends TypeAbstract
     {
         $withdrawalDate = Carbon::make($extra['date']);
 
-        $dayOfTheWeek = $withdrawalDate->dayOfWeek;
+        $monday = $withdrawalDate->startOfWeek();
 
-        $subDays = $dayOfTheWeek - 1;
-
-        $monday = Carbon::make($extra['date']);
-
-        if ($subDays != 0) {
-            $monday->subDays($subDays);
-        }
-
-        $addDays = 7 - $dayOfTheWeek;
-
-        $sunday = Carbon::make($extra['date'])->addDays();
-
-        if ($addDays) {
-            $sunday->addDays($addDays);
-        }
+        $sunday = $withdrawalDate->endOfWeek();
 
         $sum = 0;
 
