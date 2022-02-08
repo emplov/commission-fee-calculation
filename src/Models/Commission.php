@@ -6,7 +6,7 @@ class Commission
 {
     public static array $data = [];
 
-    private static array $result = [];
+    public static array $result = [];
 
     /**
      * @param string $date

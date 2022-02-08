@@ -41,7 +41,7 @@ final class Script
             die('File not exists' . PHP_EOL);
         }
 
-        $parser = new Dispatcher($this->filename, $this->separator, $this->enclosure, $this->escape);
+        $parser = new Dispatcher(CURRENT_PATH . '/' . $this->filename, $this->separator, $this->enclosure, $this->escape);
 
         $data = $parser->parse();
 

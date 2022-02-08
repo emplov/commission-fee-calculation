@@ -8,7 +8,7 @@ use CommissionFeeCalculation\Parsers\Contracts\Parser;
 
 class Dispatcher
 {
-    private string $filename;
+    private string $filepath;
 
     private string $separator;
 
@@ -19,19 +19,19 @@ class Dispatcher
     private string $extension;
 
     /**
-     * @param string $filename
+     * @param string $filepath
      * @param string $separator
      * @param string $enclosure
      * @param string $escape
      */
-    public function __construct(string $filename, string $separator, string $enclosure, string $escape)
+    public function __construct(string $filepath, string $separator, string $enclosure, string $escape)
     {
-        $this->filename = $filename;
+        $this->filepath = $filepath;
         $this->separator = $separator;
         $this->enclosure = $enclosure;
         $this->escape = $escape;
 
-        $this->extension = $this->getExtension($filename);
+        $this->extension = $this->getExtension($filepath);
     }
 
     /**
@@ -94,7 +94,7 @@ class Dispatcher
         foreach (config('accessible_types') as $accessibleType) {
             if ($extension === $accessibleType::extension()) {
                 return $accessibleType::getParser(
-                    $this->filename,
+                    $this->filepath,
                     $this->separator,
                     $this->enclosure,
                     $this->escape,

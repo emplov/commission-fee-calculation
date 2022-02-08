@@ -8,22 +8,22 @@ use CommissionFeeCalculation\Services\File;
 
 class TxtParser implements Parser
 {
-    private string $filename;
+    private string $filepath;
 
     private string $separator;
 
     /**
      * @inheritDoc
      */
-    public function __construct(string $filename, string $separator, string $enclosure = null, string $escape = null)
+    public function __construct(string $filepath, string $separator, string $enclosure = null, string $escape = null)
     {
-        $this->filename = $filename;
+        $this->filepath = $filepath;
         $this->separator = $separator;
     }
 
     public function parse(): bool
     {
-        $fileResource = File::openFile(CURRENT_PATH . '/' . $this->filename);
+        $fileResource = File::openFile($this->filepath);
 
         while (!feof($fileResource)) {
             // Get new line
