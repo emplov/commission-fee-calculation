@@ -2,7 +2,7 @@
 
 ## Documentation
 
-Run script whatever you want
+Run script wherever you want
 ````
 php ./src/script.php input.csv
 ````
