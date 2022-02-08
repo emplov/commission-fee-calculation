@@ -49,18 +49,6 @@ class PrivateWithdrawType extends TypeAbstract
 
         if (isset(self::$commissions[$userKey])) {
             foreach (self::$commissions[$userKey] as $commission) {
-                if (Commission::$data[$userKey]['user_id'] == '1') {
-                    var_dump(
-                        $commission['start_date'],
-                        $commission['end_date'],
-                        $commission['withdrawal_date'],
-                        $commission['amount'],
-                        $commission['free_amount'],
-                    );
-//                    var_dump($monday->format('Y-m-d'), $sunday->format('Y-m-d'));
-                    echo '-------------' . PHP_EOL;
-                }
-
                 if (
                     $commission['start_date'] == $monday->format('Y-m-d') &&
                     $commission['end_date'] == $sunday->format('Y-m-d')
@@ -69,11 +57,6 @@ class PrivateWithdrawType extends TypeAbstract
                 }
             }
         }
-
-//        if (Commission::$data[$userKey]['user_id'] == '1') {
-//            var_dump($amount, $currency, $sum, $withdrawalDate->format('Y-m-d'));
-//            echo '----------' . PHP_EOL;
-//        }
 
         [$amountInEur, $amountToCharge, $freeFee] = self::removeFreeAmountFee($amount, $currency, $sum);
 
@@ -131,26 +114,4 @@ class PrivateWithdrawType extends TypeAbstract
             $feeToChargeInEur,
         ];
     }
-
-    /**
-     * @param int $userKey
-     * @param string $start_date
-     * @param string $end_date
-     * @return array
-     */
-    private static function getFromList(int $userKey, string $start_date, string $end_date): array
-    {
-        $arr = [];
-
-        if (isset(self::$commissions[$userKey])) {
-            foreach (self::$commissions[$userKey] as $commission) {
-                if ($start_date == $commission['start_date'] && $end_date == $commission['end_date']) {
-                    $arr[] = $commission;
-                }
-            }
-        }
-
-        return $arr;
-    }
-
 }
