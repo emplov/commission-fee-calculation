@@ -16,7 +16,7 @@ class Config
         return self::$config;
     }
 
-    public static function get(string $path)
+    public static function get(string $path, mixed $default = null)
     {
         $parts = explode('.', $path);
 
@@ -24,9 +24,19 @@ class Config
 
         foreach ($parts as $part) {
             if (is_null($conf)) {
-                $conf = self::$config[$part];
+                if (!isset(self::$config[$part])) {
+                    $conf = $default;
+                    break;
+                } else {
+                    $conf = self::$config[$part];
+                }
             } else {
-                $conf = $conf[$part];
+                if (!isset($conf[$part])) {
+                    $conf = $default;
+                    break;
+                } else {
+                    $conf = $conf[$part];
+                }
             }
         }
 
