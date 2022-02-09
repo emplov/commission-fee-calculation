@@ -4,30 +4,31 @@ declare(strict_types=1);
 
 use CommissionFeeCalculation\Bootstrap\Script;
 
-// Путь пользователя с которого запускается сам скрипт
+// Current user's path
 define("CURRENT_PATH", getcwd());
 
-// Root путь папки от программы
+// Path to command's root path
 define("FILE_ROOT_PATH", dirname(__FILE__, 2));
 
-// Путь до файла
+// Script file path
 define("FILE_PATH", dirname(__FILE__));
 
-// Подключаем composer
+// Connecting composer's autoloader
 require FILE_ROOT_PATH . '/vendor/autoload.php';
 
-// Берем название файла с терминала
+// Taking filename from command line
 $filename = $argv[1] ?? null;
 
-// Проверяем пустой или нет
+// Check is filename empty
+// If empty exit program
 if (empty($filename)) {
-    die('Please specify the file name.' . PHP_EOL);
+    exit('Please specify the file name.' . PHP_EOL);
 }
 
-// Если нет, то создаём объект скрипта.
+// Create script object
 $script = new Script(
     filename: $filename,
 );
 
-// И запускаем его.
+// Run script
 $script->run();
