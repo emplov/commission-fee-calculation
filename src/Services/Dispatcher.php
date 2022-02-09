@@ -2,9 +2,12 @@
 
 namespace CommissionFeeCalculation\Services;
 
+use CommissionFeeCalculation\Exceptions\NotAccessableExtensionException;
 use CommissionFeeCalculation\Models\Commission;
 use CommissionFeeCalculation\Models\Currencies;
 use CommissionFeeCalculation\Parsers\Contracts\Parser;
+
+use Exception;
 
 class Dispatcher
 {
@@ -36,6 +39,7 @@ class Dispatcher
 
     /**
      * @return array
+     * @throws Exception
      */
     public function parse(): array
     {
@@ -44,28 +48,19 @@ class Dispatcher
         Currencies::fetchRates();
 
         if (empty($parser)) {
-            die('Not accessible type.' . PHP_EOL);
+            throw new NotAccessableExtensionException('Not accessible type.' . PHP_EOL);
         }
 
-        $isParsed = false;
         $errorMessage = null;
 
-        try {
-            $isParsed = $parser->parse();
+        $isParsed = $parser->parse();
+        $resData = Commission::getResult();
 
-            $resData = Commission::getResult();
-        } catch (\Exception $e) {
-            $errorMessage = $e->getMessage();
-            $isParsed = false;
-        } finally {
-            $data = [
-                'is_parsed' => $isParsed,
-                'error_message' => $errorMessage,
-                'response' => $resData ?? null,
-            ];
-        }
-
-        return $data;
+        return [
+            'is_parsed' => $isParsed,
+            'error_message' => $errorMessage,
+            'response' => $resData ?? null,
+        ];
     }
 
     /**
