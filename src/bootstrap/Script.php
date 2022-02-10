@@ -2,12 +2,13 @@
 
 namespace CommissionFeeCalculation\Bootstrap;
 
-use CommissionFeeCalculation\Exceptions\FileNotFoundException;
-use CommissionFeeCalculation\Exceptions\FileTooBigException;
-use CommissionFeeCalculation\Exceptions\NotParsableException;
 use CommissionFeeCalculation\Models\Config;
 use CommissionFeeCalculation\Services\File;
+use CommissionFeeCalculation\Models\Currencies;
 use CommissionFeeCalculation\Services\Dispatcher;
+use CommissionFeeCalculation\Exceptions\FileTooBigException;
+use CommissionFeeCalculation\Exceptions\NotParsableException;
+use CommissionFeeCalculation\Exceptions\FileNotFoundException;
 
 use Exception;
 
@@ -51,6 +52,8 @@ final class Script
         if (File::fileSize($filepath) > config('max_file_size')) {
             throw new FileTooBigException('File is too big. Max is ' . config('max_file_size') . 'mb.');
         }
+
+        Currencies::fetchRates();
 
         // Create dispatcher
         $dispatcher = new Dispatcher(CURRENT_PATH . '/' . $this->filename, $this->separator, $this->enclosure, $this->escape);
