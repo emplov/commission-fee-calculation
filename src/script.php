@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 use CommissionFeeCalculation\Bootstrap\Script;
 
+// Catch all script error
+set_exception_handler(function(Exception $e ){
+    echo "Exception class name: " . $e::class . PHP_EOL;
+    echo "Error: " . $e->getMessage() . PHP_EOL;
+    echo "File: " . $e->getFile() . PHP_EOL;
+    echo "Line: " . $e->getLine() . PHP_EOL;
+});
+
 // Current user's path
 define("CURRENT_PATH", getcwd());
 
@@ -24,11 +32,13 @@ $filename = $argv[1] ?? null;
 if (empty($filename)) {
     exit('Please specify the file name.' . PHP_EOL);
 }
+// Else run script
+else {
+    // Create script object
+    $script = new Script(
+        filename: $filename,
+    );
 
-// Create script object
-$script = new Script(
-    filename: $filename,
-);
-
-// Run script
-$script->run();
+    // Run script
+    $script->run();
+}

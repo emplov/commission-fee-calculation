@@ -15,8 +15,8 @@ abstract class BaseTest extends TestCase
 
         Config::setConfig(require './src/config.php');
 
-        Currencies::fetchRates();
-        Currencies::setRate('JPY', 130.869977);
-        Currencies::setRate('USD', 1.129031);
+        Currencies::setRate('EUR', 1);
+        Currencies::setRate('USD', 1.1497);
+        Currencies::setRate('JPY', 129.53);
     }
 }

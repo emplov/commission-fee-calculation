@@ -32,4 +32,15 @@ class File
     {
         return fclose($openedFile);
     }
+
+    /**
+     * @param string $filepath
+     * @return float
+     */
+    public static function fileSize(string $filepath): float
+    {
+        $filesize = filesize($filepath);
+
+        return ($filesize / 1000 / 1024);
+    }
 }

@@ -19,14 +19,14 @@ class ParsersTest extends BaseTest
             '0.00',
             '0.06',
             '1.50',
-            '0.00',
-            '0.69',
+            '0',
+            '0.70',
             '0.30',
             '0.30',
             '3.00',
             '0.00',
             '0.00',
-            '8607.39',
+            '8612',
         ], $data['response'],  'Returned data not same.');
     }
 }
