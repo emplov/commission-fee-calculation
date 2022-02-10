@@ -52,11 +52,11 @@ class PrivateWithdrawType extends TypeAbstract
             'end_date' => $sunday->format('Y-m-d'),
             'amount' => $amount,
             'amount_in_eur' => $amountInEur,
-            'free_amount' => $freeFee,
+            'free_amount' => self::roundNumber($freeFee, $extra['decimals_count']),
             'currency' => $currency,
         ];
 
-        $res = self::castToStandartFormat(($amountToCharge * 0.3 / 100));
+        $res = self::castToStandartFormat(($amountToCharge * config('private_withdraw_percent') / 100), $extra['decimals_count']);
 
         Commission::addResult($res);
 

@@ -20,7 +20,7 @@ class PrivateDepositType extends TypeAbstract
      */
     public static function handle(int $userKey, float $amount, string $currency, array $extra = []): void
     {
-        Commission::addResult(self::castToStandartFormat(($amount * 0.03 / 100)));
+        Commission::addResult(self::castToStandartFormat(($amount * config('private_deposit_percent') / 100)));
 
         // Save last deposit date
         Commission::$data[$userKey]['last_deposit_date'] = $extra['date'];

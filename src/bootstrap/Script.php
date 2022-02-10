@@ -4,7 +4,13 @@ namespace CommissionFeeCalculation\Bootstrap;
 
 use CommissionFeeCalculation\Models\Config;
 use CommissionFeeCalculation\Services\File;
+use CommissionFeeCalculation\Models\Currencies;
 use CommissionFeeCalculation\Services\Dispatcher;
+use CommissionFeeCalculation\Exceptions\FileTooBigException;
+use CommissionFeeCalculation\Exceptions\NotParsableException;
+use CommissionFeeCalculation\Exceptions\FileNotFoundException;
+
+use Exception;
 
 /**
  * @class Application
@@ -32,23 +38,36 @@ final class Script
      * Run application
      *
      * @return void
+     * @throws Exception
      */
     public function run(): void
     {
         $filepath = CURRENT_PATH . '/' . $this->filename;
 
+        // Check for file existence
         if (!File::fileExists($filepath)) {
-            die('File not exists' . PHP_EOL);
+            throw new FileNotFoundException('File not exists');
         }
 
-        $parser = new Dispatcher(CURRENT_PATH . '/' . $this->filename, $this->separator, $this->enclosure, $this->escape);
+        if (File::fileSize($filepath) > config('max_file_size')) {
+            throw new FileTooBigException('File is too big. Max is ' . config('max_file_size') . 'mb.');
+        }
 
-        $data = $parser->parse();
+        Currencies::fetchRates();
 
+        // Create dispatcher
+        $dispatcher = new Dispatcher(CURRENT_PATH . '/' . $this->filename, $this->separator, $this->enclosure, $this->escape);
+
+        // Parse file and get result
+        $data = $dispatcher->parse();
+
+        // If not parsed
         if (!$data['is_parsed']) {
-            die('Haven\'t been able to parse.' . PHP_EOL);
+            // Throw error
+            throw new NotParsableException('Haven\'t been able to parse.');
         }
 
+        // Show results if everything is ok.
         foreach ($data['response'] as $datum) {
             echo $datum . PHP_EOL;
         }

@@ -13,7 +13,7 @@ class Commission
      * @param int $userID
      * @param string $userType
      * @param string $operationType
-     * @param float $operationAmount
+     * @param string $operationAmount
      * @param string $operationCurrency
      * @return void
      */
@@ -22,7 +22,7 @@ class Commission
         int $userID,
         string $userType,
         string $operationType,
-        float $operationAmount,
+        string $operationAmount,
         string $operationCurrency,
     ): void
     {
@@ -45,11 +45,14 @@ class Commission
             $userKey = self::find($userID);
         }
 
+        // Get decimals count
+        $decimalsCount = mb_strlen(explode('.', $operationAmount)[1] ?? '');
+
         // Save operation
         if ($operationType === 'withdraw') {
-            self::addWithdrawal($userKey, $date, $operationAmount, $operationCurrency, $userType);
+            self::addWithdrawal($userKey, $date, $operationAmount, $operationCurrency, $userType, $decimalsCount);
         } elseif ($operationType === 'deposit') {
-            self::addDeposit($userKey, $date, $operationAmount, $operationCurrency, $userType);
+            self::addDeposit($userKey, $date, $operationAmount, $operationCurrency, $userType, $decimalsCount);
         }
     }
 
@@ -61,7 +64,7 @@ class Commission
      * @param string $userType
      * @return void
      */
-    public static function addWithdrawal(int $userKey, string $date, float $operationAmount, string $operationCurrency, string $userType)
+    public static function addWithdrawal(int $userKey, string $date, float $operationAmount, string $operationCurrency, string $userType, int $decimalsCount)
     {
         // Save withdrawal
         self::$data[$userKey]['withdrawals'][] = [
@@ -76,6 +79,7 @@ class Commission
             if (mb_strtolower($type::type()) == mb_strtolower($userType . '_withdraw')) {
                 $type::handle($userKey, $operationAmount, $operationCurrency, [
                     'date' => $date,
+                    'decimals_count' => $decimalsCount,
                 ]);
                 break;
             }
@@ -93,7 +97,7 @@ class Commission
      * @param string $userType
      * @return void
      */
-    public static function addDeposit(int $userKey, string $date, float $operationAmount, string $operationCurrency, string $userType)
+    public static function addDeposit(int $userKey, string $date, float $operationAmount, string $operationCurrency, string $userType, int $decimalsCount)
     {
         // Save deposit
         self::$data[$userKey]['deposits'][] = [
@@ -108,6 +112,7 @@ class Commission
             if (mb_strtolower($type::type()) == mb_strtolower($userType . '_deposit')) {
                 $type::handle($userKey, $operationAmount, $operationCurrency, [
                     'date' => $date,
+                    'decimals_count' => $decimalsCount,
                 ]);
                 break;
             }
