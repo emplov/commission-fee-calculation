@@ -3,6 +3,7 @@
 namespace CommissionFeeCalculation\Bootstrap;
 
 use CommissionFeeCalculation\Exceptions\FileNotFoundException;
+use CommissionFeeCalculation\Exceptions\FileTooBigException;
 use CommissionFeeCalculation\Exceptions\NotParsableException;
 use CommissionFeeCalculation\Models\Config;
 use CommissionFeeCalculation\Services\File;
@@ -45,6 +46,10 @@ final class Script
         // Check for file existence
         if (!File::fileExists($filepath)) {
             throw new FileNotFoundException('File not exists');
+        }
+
+        if (File::fileSize($filepath) > config('max_file_size')) {
+            throw new FileTooBigException('File is too big. Max is ' . config('max_file_size') . 'mb.');
         }
 
         // Create dispatcher

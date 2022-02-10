@@ -8,6 +8,8 @@ use CommissionFeeCalculation\UserTypeCommissions\PrivateWithdrawType;
 use CommissionFeeCalculation\UserTypeCommissions\BusinessWithdrawType;
 
 return [
+    'max_file_size' => 100, // in MB
+
     'accessible_types' => [
         CsvItemAbstract::class,
         TxtItemAbstract::class,
