@@ -2,9 +2,9 @@
 
 namespace CommissionFeeCalculation\Parsers\Facades;
 
-use CommissionFeeCalculation\Parsers\Contracts\ItemAbstract;
-use CommissionFeeCalculation\Parsers\Contracts\Parser;
 use CommissionFeeCalculation\Parsers\Items\TxtParser;
+use CommissionFeeCalculation\Parsers\Contracts\Parser;
+use CommissionFeeCalculation\Parsers\Contracts\ItemAbstract;
 
 class TxtItemAbstract implements ItemAbstract
 {

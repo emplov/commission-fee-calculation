@@ -3,8 +3,8 @@
 namespace CommissionFeeCalculation\Parsers\Facades;
 
 use CommissionFeeCalculation\Parsers\Items\CsvParser;
-use CommissionFeeCalculation\Parsers\Contracts\ItemAbstract;
 use CommissionFeeCalculation\Parsers\Contracts\Parser;
+use CommissionFeeCalculation\Parsers\Contracts\ItemAbstract;
 
 class CsvItemAbstract implements ItemAbstract
 {

@@ -62,6 +62,7 @@ class Commission
      * @param float $operationAmount
      * @param string $operationCurrency
      * @param string $userType
+     * @param int $decimalsCount
      * @return void
      */
     public static function addWithdrawal(int $userKey, string $date, float $operationAmount, string $operationCurrency, string $userType, int $decimalsCount)
