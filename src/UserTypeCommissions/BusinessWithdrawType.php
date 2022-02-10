@@ -20,7 +20,7 @@ class BusinessWithdrawType extends TypeAbstract
      */
     public static function handle(int $userKey, float $amount, string $currency, array $extra = []): void
     {
-        Commission::addResult(self::castToStandartFormat(($amount * 0.5 / 100)));
+        Commission::addResult(self::castToStandartFormat(($amount * config('business_withdraw_percent') / 100)));
 
         // Save last withdraw date
         Commission::$data[$userKey]['last_withdraw_date'] = $extra['date'];

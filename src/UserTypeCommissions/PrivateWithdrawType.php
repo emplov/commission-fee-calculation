@@ -56,7 +56,7 @@ class PrivateWithdrawType extends TypeAbstract
             'currency' => $currency,
         ];
 
-        $res = self::castToStandartFormat(($amountToCharge * 0.3 / 100));
+        $res = self::castToStandartFormat(($amountToCharge * config('private_withdraw_percent') / 100));
 
         Commission::addResult($res);
 
