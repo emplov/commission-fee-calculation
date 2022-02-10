@@ -24,10 +24,35 @@ abstract class TypeAbstract
 
     /**
      * @param float|int $amount
+     * @param int $decimalsCount
      * @return string
      */
-    protected static function castToStandartFormat(float|int $amount): string
+    public static function roundNumber(float|int $amount, int $decimalsCount = 2): string
     {
-        return number_format(round($amount, 2), 2, '.', '');
+        if ($decimalsCount == 0) {
+            $amount = ceil($amount);
+        } else {
+            $amount = round(
+                $amount,
+                $decimalsCount,
+            );
+        }
+
+        return $amount;
+    }
+
+    /**
+     * @param float|int $amount
+     * @param int $decimalsCount
+     * @return string
+     */
+    public static function castToStandartFormat(float|int $amount, int $decimalsCount = 2): string
+    {
+        return number_format(
+            self::roundNumber($amount, $decimalsCount),
+            $decimalsCount,
+            '.',
+            '',
+        );
     }
 }
