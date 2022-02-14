@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CommissionFeeCalculation\Parsers\Items;
 
-use CommissionFeeCalculation\Models\Commission;
 use CommissionFeeCalculation\Parsers\Contracts\Parser;
 use CommissionFeeCalculation\Services\File;
+use Generator;
 
 class TxtParser implements Parser
 {
@@ -21,26 +23,29 @@ class TxtParser implements Parser
         $this->separator = $separator;
     }
 
-    public function parse(): bool
+    /**
+     * @inheritDoc
+     */
+    public function parse(): Generator|array
     {
         $fileResource = File::openFile($this->filepath);
 
         while (!feof($fileResource)) {
-            // Get new line
-            $line = trim(fgets($fileResource));
 
-            // Check for not emptiness
-            if (empty($line)) {
+            // Get new line
+            $line = fgets($fileResource);
+
+            // Check for emptiness
+            if (empty($line) || is_bool($line)) {
                 continue;
             }
 
+            $line = trim($line);
+
             // Explode by separator
-            $data = explode($this->separator, $line);
+            $userTransaction = explode($this->separator, $line);
 
-            // Add data to model
-            Commission::addData($data[0], (int) $data[1], $data[2], $data[3], $data[4], $data[5]);
+            yield $userTransaction;
         }
-
-        return true;
     }
 }

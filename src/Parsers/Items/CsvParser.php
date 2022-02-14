@@ -1,45 +1,47 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CommissionFeeCalculation\Parsers\Items;
 
-use CommissionFeeCalculation\Services\File;
-use CommissionFeeCalculation\Models\Commission;
 use CommissionFeeCalculation\Parsers\Contracts\Parser;
+use CommissionFeeCalculation\Services\File;
+use Generator;
 
 class CsvParser implements Parser
 {
-    private string $filepath;
-
-    private string $separator;
-
-    private string $enclosure;
-
-    private string $escape;
-
     /**
      * @inheritDoc
      */
-    public function __construct(string $filepath, string $separator, string $enclosure = null, string $escape = null)
-    {
-        $this->filepath = $filepath;
-        $this->separator = $separator;
-        $this->enclosure = $enclosure;
-        $this->escape = $escape;
+    public function __construct(
+        private string  $filepath,
+        private string  $separator,
+        private ?string $enclosure = null,
+        private ?string $escape = null,
+    ) {
     }
 
     /**
      * @inheritDoc
      */
-    public function parse(): bool
+    public function parse(): Generator|array
     {
         $fileResource = File::openFile($this->filepath);
 
-        while (($data = fgetcsv($fileResource, 1000, $this->separator, $this->enclosure, $this->escape)) !== false) {
-            Commission::addData($data[0], $data[1], $data[2], $data[3], $data[4], $data[5]);
+        while (
+            (
+                $userTransaction = fgetcsv(
+                    $fileResource,
+                    1000,
+                    $this->separator,
+                    $this->enclosure,
+                    $this->escape,
+                )
+            ) !== false
+        ) {
+            yield $userTransaction;
         }
 
         File::closeFile($fileResource);
-
-        return true;
     }
 }

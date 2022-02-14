@@ -1,26 +1,39 @@
 {
     "name": "emplov/commision-fee-calculation",
-    "autoload": {
-        "psr-4": {
-                "CommissionFeeCalculation\\": "src/"
-        },
-        "files": [
-            "src/Utils/functions.php"
-        ]
-    },
     "authors": [
         {
             "name": "Composera || emplov",
             "email": "asadxoja5651@gmail.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+                "CommissionFeeCalculation\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CommissionFeeCalculation\\Tests\\": "tests"
+        }
+    },
     "require": {
-        "nesbot/carbon": "^2.56"
+        "ext-bcmath": "*",
+        "guzzlehttp/guzzle": "^7.4",
+        "nesbot/carbon": "^2.56",
+        "psr/container": "^2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "friendsofphp/php-cs-fixer": "3.*"
+    },
+    "config": {
+        "sort-packages": true,
+        "bin-dir": "bin"
     },
     "scripts": {
-        "test": "phpunit --testdox tests"
+        "phpunit": "phpunit --testdox",
+        "fix-cs": "php-cs-fixer fix",
+        "test-cs": "php-cs-fixer fix --dry-run -v",
+        "test": ["@phpunit", "@test-cs"]
     }
 }

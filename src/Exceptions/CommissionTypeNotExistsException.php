@@ -2,6 +2,6 @@
 
 namespace CommissionFeeCalculation\Exceptions;
 
-class FileTooBigException extends \Exception
+class CommissionTypeNotExistsException extends \Exception
 {
 }

@@ -1,6 +1,12 @@
 # Excluded folders.
 .idea/
 vendor/
+bin/
 
 # Excluded files.
 composer.lock
+.phpunit.result.cache
+.php_cs.cache
+.php-cs-fixer.php
+.php-cs-fixer.cache
+phpunit.xml.dist.bak
