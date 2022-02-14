@@ -15,7 +15,7 @@ class TxtParser implements Parser
     private string $separator;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function __construct(string $filepath, string $separator, string $enclosure = null, string $escape = null)
     {
@@ -24,14 +24,13 @@ class TxtParser implements Parser
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function parse(): Generator|array
     {
         $fileResource = File::openFile($this->filepath);
 
         while (!feof($fileResource)) {
-
             // Get new line
             $line = fgets($fileResource);
 
@@ -47,5 +46,7 @@ class TxtParser implements Parser
 
             yield $userTransaction;
         }
+
+        File::closeFile($fileResource);
     }
 }

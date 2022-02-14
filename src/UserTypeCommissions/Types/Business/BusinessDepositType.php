@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\UserTypeCommissions\Types\Business;
 
-use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
 use CommissionFeeCalculation\Repositories\Commission;
-use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Repositories\User;
 use CommissionFeeCalculation\Services\Config;
+use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Math;
+use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
 
 class BusinessDepositType extends TypeAbstract
 {
@@ -27,7 +27,7 @@ class BusinessDepositType extends TypeAbstract
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public static function type(): string
     {
@@ -35,7 +35,7 @@ class BusinessDepositType extends TypeAbstract
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function handle(int $userKey, string $amount, string $currency, array $extra = []): void
     {

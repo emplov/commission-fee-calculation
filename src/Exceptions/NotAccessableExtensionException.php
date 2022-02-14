@@ -6,5 +6,5 @@ namespace CommissionFeeCalculation\Exceptions;
 
 class NotAccessableExtensionException extends \Exception
 {
-    protected $message = 'Not accessible type.' . PHP_EOL;
+    protected $message = 'Not accessible type.'.PHP_EOL;
 }

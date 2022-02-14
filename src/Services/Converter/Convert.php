@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CommissionFeeCalculation\Services\Converter;
 
 interface Convert

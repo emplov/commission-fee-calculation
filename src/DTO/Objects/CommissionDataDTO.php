@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CommissionFeeCalculation\DTO\Objects;
 
 use CommissionFeeCalculation\DTO\Contracts\DTOAbstract;

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\Repositories;
 
-use CommissionFeeCalculation\Exceptions\CommissionTypeNotExistsException;
-use CommissionFeeCalculation\UserTypeCommissions\TypesContext;
 use CommissionFeeCalculation\DTO\Objects\CommissionDataDTO;
-use CommissionFeeCalculation\Services\Container;
+use CommissionFeeCalculation\Exceptions\CommissionTypeNotExistsException;
 use CommissionFeeCalculation\Services\Config;
+use CommissionFeeCalculation\Services\Container;
+use CommissionFeeCalculation\UserTypeCommissions\TypesContext;
 
 class Commission
 {
@@ -26,13 +26,6 @@ class Commission
     }
 
     /**
-     * @param string $date
-     * @param int $userID
-     * @param string $userType
-     * @param string $operationType
-     * @param string $operationAmount
-     * @param string $operationCurrency
-     * @return void
      * @throws CommissionTypeNotExistsException
      */
     public function addData(
@@ -83,8 +76,8 @@ class Commission
     }
 
     /**
-     * @param CommissionDataDTO $dto
      * @return void
+     *
      * @throws CommissionTypeNotExistsException
      */
     public function addWithdrawal(CommissionDataDTO $dto)
@@ -119,8 +112,8 @@ class Commission
     }
 
     /**
-     * @param CommissionDataDTO $dto
      * @return void
+     *
      * @throws CommissionTypeNotExistsException
      */
     public function addDeposit(CommissionDataDTO $dto)
@@ -154,18 +147,13 @@ class Commission
         $this->user->users[$dto->userKey]['last_deposit_date'] = $dto->date;
     }
 
-    /**
-     * @param string $commissionType
-     * @param string $userType
-     * @return TypesContext
-     */
     public function getTypeHandler(string $commissionType, string $userType): TypesContext
     {
         $context = new TypesContext();
 
         foreach (Config::get('user_types')[$userType] as $type => $object) {
             if (
-                mb_strtolower($userType . '_' . $type) == mb_strtolower($userType . '_' . $commissionType)
+                mb_strtolower($userType.'_'.$type) === mb_strtolower($userType.'_'.$commissionType)
             ) {
                 $context->setStrategy(new $object());
 
@@ -177,9 +165,7 @@ class Commission
     }
 
     /**
-     * Get result
-     *
-     * @return array
+     * Get result.
      */
     public function getResult(): array
     {
@@ -187,10 +173,7 @@ class Commission
     }
 
     /**
-     * Get result
-     *
-     * @param mixed $result
-     * @return mixed
+     * Get result.
      */
     public function addResult(mixed $result): mixed
     {

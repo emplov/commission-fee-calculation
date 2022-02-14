@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use CommissionFeeCalculation\Parsers\Items\CsvParser;
 use CommissionFeeCalculation\Parsers\Items\TxtParser;
 use CommissionFeeCalculation\UserTypeCommissions\Types\Business\BusinessDepositType;
@@ -34,7 +36,7 @@ return [
         'private' => [
             'deposit' => '0.03',
             'withdraw' => [
-                'percent' => "0.3",
+                'percent' => '0.3',
                 'week_free_fee_amount' => '1000',
             ],
         ],
