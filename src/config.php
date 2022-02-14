@@ -1,35 +1,42 @@
 <?php
 
-use CommissionFeeCalculation\Parsers\Facades\CsvItemAbstract;
-use CommissionFeeCalculation\Parsers\Facades\TxtItemAbstract;
-use CommissionFeeCalculation\UserTypeCommissions\PrivateDepositType;
-use CommissionFeeCalculation\UserTypeCommissions\BusinessDepositType;
-use CommissionFeeCalculation\UserTypeCommissions\PrivateWithdrawType;
-use CommissionFeeCalculation\UserTypeCommissions\BusinessWithdrawType;
+use CommissionFeeCalculation\Parsers\Items\CsvParser;
+use CommissionFeeCalculation\Parsers\Items\TxtParser;
+use CommissionFeeCalculation\UserTypeCommissions\Types\Business\BusinessDepositType;
+use CommissionFeeCalculation\UserTypeCommissions\Types\Business\BusinessWithdrawType;
+use CommissionFeeCalculation\UserTypeCommissions\Types\Privete\PrivateDepositType;
+use CommissionFeeCalculation\UserTypeCommissions\Types\Privete\PrivateWithdrawType;
 
 return [
     'max_file_size' => 100, // in MB
 
-    'accessible_types' => [
-        CsvItemAbstract::class,
-        TxtItemAbstract::class,
+    'accessible_extensions' => [
+        'csv' => CsvParser::class,
+        'txt' => TxtParser::class,
     ],
 
     'user_types' => [
         'private' => [
-            PrivateDepositType::class,
-            PrivateWithdrawType::class,
+            'deposit' => PrivateDepositType::class,
+            'withdraw' => PrivateWithdrawType::class,
         ],
         'business' => [
-            BusinessDepositType::class,
-            BusinessWithdrawType::class,
+            'deposit' => BusinessDepositType::class,
+            'withdraw' => BusinessWithdrawType::class,
         ],
     ],
 
-    'week_free_fee_amount' => 1000,
-
-    'business_deposit_percent' => 0.03,
-    'private_deposit_percent' => 0.03,
-    'business_withdraw_percent' => 0.5,
-    'private_withdraw_percent' => 0.3,
+    'commissions' => [
+        'business' => [
+            'deposit' => '0.03',
+            'withdraw' => '0.5',
+        ],
+        'private' => [
+            'deposit' => '0.03',
+            'withdraw' => [
+                'percent' => "0.3",
+                'week_free_fee_amount' => '1000',
+            ],
+        ],
+    ],
 ];

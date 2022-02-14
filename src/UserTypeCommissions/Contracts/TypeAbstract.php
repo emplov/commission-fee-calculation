@@ -1,6 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CommissionFeeCalculation\UserTypeCommissions\Contracts;
+
+use CommissionFeeCalculation\Services\Container;
+use CommissionFeeCalculation\Services\Math;
 
 abstract class TypeAbstract
 {
@@ -15,24 +20,27 @@ abstract class TypeAbstract
      * Handler
      *
      * @param int $userKey
-     * @param float $amount
+     * @param string $amount
      * @param string $currency
      * @param array $extra
      * @return void
      */
-    abstract public static function handle(int $userKey, float $amount, string $currency, array $extra = []): void;
+    abstract public function handle(int $userKey, string $amount, string $currency, array $extra = []): void;
 
     /**
-     * @param float|int $amount
+     * @param string $amount
      * @param int $decimalsCount
-     * @return string
+     * @return string|float
      */
-    public static function roundNumber(float|int $amount, int $decimalsCount = 2): string
+    public function roundNumber(string $amount, int $decimalsCount = 2): string|float
     {
+        /** @var Math $math */
+        $math = Container::getInstance()->get(Math::class);
+
         if ($decimalsCount == 0) {
-            $amount = ceil($amount);
+            $amount = $math->bcceil($amount);
         } else {
-            $amount = round(
+            $amount = $math->bcround(
                 $amount,
                 $decimalsCount,
             );
@@ -42,14 +50,14 @@ abstract class TypeAbstract
     }
 
     /**
-     * @param float|int $amount
+     * @param string $amount
      * @param int $decimalsCount
      * @return string
      */
-    public static function castToStandartFormat(float|int $amount, int $decimalsCount = 2): string
+    public function castToStandartFormat(string $amount, int $decimalsCount = 2): string
     {
         return number_format(
-            self::roundNumber($amount, $decimalsCount),
+            floatval(self::roundNumber($amount, $decimalsCount)),
             $decimalsCount,
             '.',
             '',

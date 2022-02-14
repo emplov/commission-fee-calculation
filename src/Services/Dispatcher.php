@@ -1,99 +1,51 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CommissionFeeCalculation\Services;
 
-use CommissionFeeCalculation\Models\Commission;
-use CommissionFeeCalculation\Parsers\Contracts\Parser;
-use CommissionFeeCalculation\Exceptions\NotAccessableExtensionException;
+use CommissionFeeCalculation\Repositories\Commission;
 
 use Exception;
+use Generator;
 
 class Dispatcher
 {
-    private string $filepath;
+    private Commission $commission;
 
-    private string $separator;
-
-    private string $enclosure;
-
-    private string $escape;
-
-    private string $extension;
+    private Generator|array $transactions;
 
     /**
-     * @param string $filepath
-     * @param string $separator
-     * @param string $enclosure
-     * @param string $escape
+     * Object's constructor
      */
-    public function __construct(string $filepath, string $separator, string $enclosure, string $escape)
-    {
-        $this->filepath = $filepath;
-        $this->separator = $separator;
-        $this->enclosure = $enclosure;
-        $this->escape = $escape;
-
-        $this->extension = $this->getExtension($filepath);
+    public function __construct(
+        array|Generator $transactions
+    ) {
+        $this->commission = Container::getInstance()->get(Commission::class);
+        $this->transactions = $transactions;
     }
 
     /**
      * @return array
      * @throws Exception
      */
-    public function parse(): array
+    public function dispatch(): array
     {
-        $parser = $this->checkExtensionTypeAndGetParser($this->extension);
-
-        if (empty($parser)) {
-            throw new NotAccessableExtensionException('Not accessible type.' . PHP_EOL);
+        foreach ($this->transactions as $transaction) {
+            $this->commission->addData(
+                $transaction[0],
+                (int) $transaction[1],
+                $transaction[2],
+                $transaction[3],
+                $transaction[4],
+                $transaction[5],
+            );
         }
 
-        $errorMessage = null;
-
-        $isParsed = $parser->parse();
-        $resData = Commission::getResult();
+        $calculatedCommissions = $this->commission->getResult();
 
         return [
-            'is_parsed' => $isParsed,
-            'error_message' => $errorMessage,
-            'response' => $resData ?? null,
+            'response' => $calculatedCommissions,
         ];
-    }
-
-    /**
-     * Get file extension
-     *
-     * @param string $filename
-     * @return string
-     */
-    public function getExtension(string $filename): string
-    {
-        $filename = strrev($filename);
-
-        $explodedData = explode('.', $filename);
-
-        return strrev($explodedData[0] ?? null);
-    }
-
-    /**
-     * Check if available in program.
-     *
-     * @param string $extension
-     * @return Parser|null
-     */
-    public function checkExtensionTypeAndGetParser(string $extension): ?Parser
-    {
-        foreach (config('accessible_types') as $accessibleType) {
-            if ($extension === $accessibleType::extension()) {
-                return $accessibleType::getParser(
-                    $this->filepath,
-                    $this->separator,
-                    $this->enclosure,
-                    $this->escape,
-                );
-            }
-        }
-
-        return null;
     }
 }
