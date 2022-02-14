@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CommissionFeeCalculation\Repositories;
 
 class User
@@ -7,10 +9,7 @@ class User
     public array $users = [];
 
     /**
-     * Find user
-     *
-     * @param int $userID
-     * @return string|int|null
+     * Find user.
      */
     public function find(int $userID): string|int|null
     {

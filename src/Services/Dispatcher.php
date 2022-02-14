@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace CommissionFeeCalculation\Services;
 
 use CommissionFeeCalculation\Repositories\Commission;
-
 use Exception;
 use Generator;
 
@@ -16,7 +15,7 @@ class Dispatcher
     private Generator|array $transactions;
 
     /**
-     * Object's constructor
+     * Object's constructor.
      */
     public function __construct(
         array|Generator $transactions
@@ -26,7 +25,6 @@ class Dispatcher
     }
 
     /**
-     * @return array
      * @throws Exception
      */
     public function dispatch(): array

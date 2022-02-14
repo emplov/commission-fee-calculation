@@ -1,8 +1,8 @@
 <?php
 
-namespace CommissionFeeCalculation\Exceptions;
+declare(strict_types=1);
 
-use Throwable;
+namespace CommissionFeeCalculation\Exceptions;
 
 class ScriptException extends \Exception
 {

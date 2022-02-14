@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\UserTypeCommissions\Types\Privete;
 
-use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
-use CommissionFeeCalculation\Services\Converter\Convert;
+use Carbon\Carbon;
 use CommissionFeeCalculation\Repositories\Commission;
-use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Repositories\User;
 use CommissionFeeCalculation\Services\Config;
+use CommissionFeeCalculation\Services\Container;
+use CommissionFeeCalculation\Services\Converter\Convert;
 use CommissionFeeCalculation\Services\Math;
-use Carbon\Carbon;
+use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
 
 class PrivateWithdrawType extends TypeAbstract
 {
@@ -34,7 +34,7 @@ class PrivateWithdrawType extends TypeAbstract
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public static function type(): string
     {
@@ -42,7 +42,7 @@ class PrivateWithdrawType extends TypeAbstract
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function handle(int $userKey, string $amount, string $currency, array $extra = []): void
     {
@@ -57,8 +57,8 @@ class PrivateWithdrawType extends TypeAbstract
         if (isset(self::$commissions[$userKey])) {
             foreach (self::$commissions[$userKey] as $commission) {
                 if (
-                    $commission['start_date'] == $monday->format('Y-m-d') &&
-                    $commission['end_date'] == $sunday->format('Y-m-d')
+                    $commission['start_date'] === $monday->format('Y-m-d') &&
+                    $commission['end_date'] === $sunday->format('Y-m-d')
                 ) {
                     $sum = $this->math->add(
                         $sum,
@@ -77,7 +77,7 @@ class PrivateWithdrawType extends TypeAbstract
             'end_date' => $sunday->format('Y-m-d'),
             'amount' => $amount,
             'amount_in_eur' => $amountInEur,
-            'free_amount' => self::roundNumber(strval($freeFee), (int)$extra['decimals_count']),
+            'free_amount' => self::roundNumber(strval($freeFee), (int) $extra['decimals_count']),
             'currency' => $currency,
         ];
 
@@ -99,11 +99,7 @@ class PrivateWithdrawType extends TypeAbstract
     }
 
     /**
-     * @param string $amount
-     * @param string $currency
-     * @param string $usedWeekFreeFeeAmount
      * @param int $decimalsCount
-     * @return array
      */
     private function removeFreeAmountFee(string $amount, string $currency, string $usedWeekFreeFeeAmount): array
     {

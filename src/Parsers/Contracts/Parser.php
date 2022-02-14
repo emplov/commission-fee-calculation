@@ -9,17 +9,13 @@ use Generator;
 interface Parser
 {
     /**
-     * @param string $filename
-     * @param string $separator
      * @param ?string $enclosure
      * @param ?string $escape
      */
     public function __construct(string $filename, string $separator, string $enclosure = null, string $escape = null);
 
     /**
-     * Parse file
-     *
-     * @return Generator|array
+     * Parse file.
      */
     public function parse(): Generator|array;
 }

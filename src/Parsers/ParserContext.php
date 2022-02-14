@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CommissionFeeCalculation\Parsers;
 
 use CommissionFeeCalculation\Exceptions\NotAccessableExtensionException;
@@ -11,7 +13,6 @@ class ParserContext
     private ?Parser $parser = null;
 
     /**
-     * @param Parser $parser
      * @return void
      */
     public function setStrategy(Parser $parser)
@@ -20,7 +21,6 @@ class ParserContext
     }
 
     /**
-     * @return Generator|array
      * @throws NotAccessableExtensionException
      */
     public function execute(): Generator|array

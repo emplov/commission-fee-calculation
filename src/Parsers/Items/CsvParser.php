@@ -11,18 +11,18 @@ use Generator;
 class CsvParser implements Parser
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function __construct(
-        private string  $filepath,
-        private string  $separator,
+        private string $filepath,
+        private string $separator,
         private ?string $enclosure = null,
         private ?string $escape = null,
     ) {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function parse(): Generator|array
     {

@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace CommissionFeeCalculation\Services;
 
 use Exception;
-
 use Psr\Container\ContainerInterface;
 
 class Container implements ContainerInterface
 {
-    private static ?self $_instance = null;
+    private static self $_instance;
 
     private array $container = [];
 
