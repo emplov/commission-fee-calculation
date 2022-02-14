@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\DTO\Contracts;
 
-use ReflectionProperty;
 use ReflectionClass;
+use ReflectionProperty;
 
 abstract class DTOAbstract
 {

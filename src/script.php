@@ -2,30 +2,30 @@
 
 declare(strict_types=1);
 
-use CommissionFeeCalculation\Services\Converter\CurrencyConverter;
-use CommissionFeeCalculation\Services\Converter\Convert;
+use CommissionFeeCalculation\Bootstrap\Script;
 use CommissionFeeCalculation\Exceptions\ScriptException;
 use CommissionFeeCalculation\Repositories\Commission;
-use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Repositories\User;
-use CommissionFeeCalculation\Bootstrap\Script;
 use CommissionFeeCalculation\Services\Config;
+use CommissionFeeCalculation\Services\Container;
+use CommissionFeeCalculation\Services\Converter\Convert;
+use CommissionFeeCalculation\Services\Converter\CurrencyConverter;
 use CommissionFeeCalculation\Services\File;
 use CommissionFeeCalculation\Services\Math;
 
 // Catch all script exceptions and type errors
 set_exception_handler(function (Exception|TypeError|Error $e) {
-    echo "Exception class name: " . $e::class . PHP_EOL;
-    echo "Error: " . $e->getMessage() . PHP_EOL;
-    echo "File: " . $e->getFile() . PHP_EOL;
-    echo "Line: " . $e->getLine() . PHP_EOL;
+    echo 'Exception class name: '.$e::class.PHP_EOL;
+    echo 'Error: '.$e->getMessage().PHP_EOL;
+    echo 'File: '.$e->getFile().PHP_EOL;
+    echo 'Line: '.$e->getLine().PHP_EOL;
 });
 
 // path till src folder
 $scriptPath = dirname(__FILE__);
 
 // Connecting composer's autoloader
-require_once $scriptPath . '/../vendor/autoload.php';
+require_once $scriptPath.'/../vendor/autoload.php';
 
 // Taking filename from command line
 $filepath = $argv[1] ?? null;
@@ -37,7 +37,7 @@ if (empty($filepath)) {
 }
 
 // Set global config
-Config::setConfig(include $scriptPath . '/config.php');
+Config::setConfig(include $scriptPath.'/config.php');
 
 // Check file for existence
 if (!File::fileExists($filepath)) {

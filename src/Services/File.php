@@ -7,10 +7,7 @@ namespace CommissionFeeCalculation\Services;
 class File
 {
     /**
-     * Check for file existence
-     *
-     * @param string $path
-     * @return bool
+     * Check for file existence.
      */
     public static function fileExists(string $path): bool
     {
@@ -18,7 +15,6 @@ class File
     }
 
     /**
-     * @param string $path
      * @return false|resource
      */
     public static function openFile(string $path)
@@ -28,21 +24,16 @@ class File
 
     /**
      * @param $openedFile
-     * @return bool
      */
     public static function closeFile($openedFile): bool
     {
         return fclose($openedFile);
     }
 
-    /**
-     * @param string $filepath
-     * @return float
-     */
     public static function fileSize(string $filepath): float
     {
         $filesize = filesize($filepath);
 
-        return ($filesize / 1000 / 1024);
+        return $filesize / 1000 / 1024;
     }
 }

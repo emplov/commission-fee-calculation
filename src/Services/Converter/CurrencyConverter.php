@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CommissionFeeCalculation\Services\Converter;
 
 use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Math;
-use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 
 class CurrencyConverter implements Convert
 {
@@ -19,14 +21,15 @@ class CurrencyConverter implements Convert
     }
 
     /**
-     * Get rates from api
+     * Get rates from api.
      *
      * @return void
+     *
      * @throws GuzzleException
      */
     public function fetchRates()
     {
-        if (count($this->currencies_rate) == 0) {
+        if (count($this->currencies_rate) === 0) {
             $guzzleClient = new Client();
 
             $response = $guzzleClient->request(
@@ -42,7 +45,7 @@ class CurrencyConverter implements Convert
 
     public function convert(string $amount, string $currency)
     {
-        return ($amount / $this->getRate($currency));
+        return $amount / $this->getRate($currency);
     }
 
     public function getRate(string $currency)
