@@ -33,7 +33,7 @@ class BusinessWithdrawType extends TypeAbstract
     /**
      * {@inheritDoc}
      */
-    public function handle(int $userKey, string $amount, string $currency, array $extra = []): void
+    public function handle(int $userKey, string $amount, string $currency, string $date, int $decimalsCount): void
     {
         $this->commission->addResult(
             $this->castToStandartFormat(
@@ -41,12 +41,12 @@ class BusinessWithdrawType extends TypeAbstract
                     $this->math->multiply(
                         $amount,
                         Config::get('commissions.business.withdraw'),
-                        $extra['decimals_count'],
+                        $decimalsCount,
                     ),
                     '100',
-                    $extra['decimals_count'],
+                    $decimalsCount,
                 ),
-                $extra['decimals_count'],
+                $decimalsCount,
             ),
         );
     }

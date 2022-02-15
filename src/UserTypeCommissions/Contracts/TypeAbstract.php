@@ -17,7 +17,7 @@ abstract class TypeAbstract
     /**
      * Handler.
      */
-    abstract public function handle(int $userKey, string $amount, string $currency, array $extra = []): void;
+    abstract public function handle(int $userKey, string $amount, string $currency, string $date, int $decimalsCount): void;
 
     public function roundNumber(string $amount, int $decimalsCount = 2): string|float
     {

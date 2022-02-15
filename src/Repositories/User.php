@@ -6,7 +6,7 @@ namespace CommissionFeeCalculation\Repositories;
 
 class User
 {
-    public array $users = [];
+    private array $users = [];
 
     public function find(int $userID): ?array
     {
@@ -23,5 +23,10 @@ class User
             'withdrawals' => [],
             'deposits' => [],
         ];
+    }
+
+    public function addTransaction(int $userID, Transaction $transaction, string $type): void
+    {
+        $this->users[$userID][$type][] = $transaction;
     }
 }

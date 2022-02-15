@@ -44,9 +44,9 @@ class PrivateWithdrawType extends TypeAbstract
     /**
      * {@inheritDoc}
      */
-    public function handle(int $userKey, string $amount, string $currency, array $extra = []): void
+    public function handle(int $userKey, string $amount, string $currency, string $date, int $decimalsCount): void
     {
-        $withdrawalDate = Carbon::make($extra['date']);
+        $withdrawalDate = Carbon::make($date);
 
         $monday = $withdrawalDate->startOfWeek();
 
@@ -63,7 +63,7 @@ class PrivateWithdrawType extends TypeAbstract
                     $sum = $this->math->add(
                         $sum,
                         $commission['free_amount'],
-                        $extra['decimals_count'],
+                        $decimalsCount,
                     );
                 }
             }
@@ -77,7 +77,7 @@ class PrivateWithdrawType extends TypeAbstract
             'end_date' => $sunday->format('Y-m-d'),
             'amount' => $amount,
             'amount_in_eur' => $amountInEur,
-            'free_amount' => $this->roundNumber((string) $freeFee, (int) $extra['decimals_count']),
+            'free_amount' => $this->roundNumber((string) $freeFee, $decimalsCount),
             'currency' => $currency,
         ];
 
@@ -89,7 +89,7 @@ class PrivateWithdrawType extends TypeAbstract
                 ),
                 '100',
             ),
-            $extra['decimals_count'],
+            $decimalsCount,
         );
 
         $this->commission->addResult($res);

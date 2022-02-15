@@ -65,12 +65,12 @@ class Commission
     public function addWithdrawal(CommissionDTO $dto): void
     {
         // Save withdrawal
-        $this->user->users[$dto->userKey]['withdrawals'][] = new Transaction(
+        $this->user->addTransaction($dto->userKey,  new Transaction(
             $dto->date,
             Transaction::TYPE_WITHDRAWAL,
             $dto->operationAmount,
             $dto->operationCurrency,
-        );
+        ), 'withdrawals');
 
         // Withdrawal check statements
         $context = $this->getTypeHandler(
@@ -83,22 +83,20 @@ class Commission
             commissionType: self::WITHDRAW_TYPE,
             amount: $dto->operationAmount,
             currency: $dto->operationCurrency,
-            extra: [
-                'date' => $dto->date,
-                'decimals_count' => $dto->decimalsCount,
-            ],
+            date: $dto->date,
+            decimalsCount: $dto->decimalsCount,
         );
     }
 
     public function addDeposit(CommissionDTO $dto): void
     {
         // Save deposit
-        $this->user->users[$dto->userKey]['deposits'][] = new Transaction(
+        $this->user->addTransaction($dto->userKey,  new Transaction(
             $dto->date,
-            Transaction::TYPE_DEPOSIT,
+            Transaction::TYPE_WITHDRAWAL,
             $dto->operationAmount,
             $dto->operationCurrency,
-        );
+        ), 'deposits');
 
         // Deposit check statements
         $context = $this->getTypeHandler(
@@ -111,10 +109,8 @@ class Commission
             commissionType: self::DEPOSIT_TYPE,
             amount: $dto->operationAmount,
             currency: $dto->operationCurrency,
-            extra: [
-                'date' => $dto->date,
-                'decimals_count' => $dto->decimalsCount,
-            ],
+            date: $dto->date,
+            decimalsCount: $dto->decimalsCount,
         );
     }
 

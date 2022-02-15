@@ -21,17 +21,24 @@ class TypesContext
         $this->user = Container::getInstance()->get(User::class);
     }
 
-    public function execute(int $userKey, string $commissionType, string $amount, string $currency, array $extra = []): void
+    public function execute(
+        int $userKey,
+        string $commissionType,
+        string $amount,
+        string $currency,
+        string $date,
+        int $decimalsCount,
+    ): void
     {
         if (is_null($this->type)) {
             $this->showError($userKey, $commissionType);
         }
 
-        $this->type->handle($userKey, $amount, $currency, $extra);
+        $this->type->handle($userKey, $amount, $currency, $date, $decimalsCount);
     }
 
     private function showError(int $userKey, string $commissionType): void
     {
-        throw new CommissionTypeNotExistsException('['.$this->user->users[$userKey]['type'].'_'.$commissionType.'] is not exists.'.PHP_EOL, );
+        throw new CommissionTypeNotExistsException('['.$this->user->find($userKey)['user_type'].'_'.$commissionType.'] is not exists.'.PHP_EOL, );
     }
 }
