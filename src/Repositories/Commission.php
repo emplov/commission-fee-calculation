@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\Repositories;
 
-use CommissionFeeCalculation\DTO\CommissionDataDTO;
+use CommissionFeeCalculation\DTO\CommissionDTO;
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\UserTypeCommissions\TypesContext;
@@ -45,7 +45,7 @@ class Commission
         // Get decimals count
         $decimalsCount = mb_strlen(explode('.', $operationAmount)[1] ?? '');
 
-        $dto = new CommissionDataDTO(
+        $dto = new CommissionDTO(
             userKey: $user['user_id'],
             date: $date,
             operationAmount: $operationAmount,
@@ -62,7 +62,7 @@ class Commission
         }
     }
 
-    public function addWithdrawal(CommissionDataDTO $dto): void
+    public function addWithdrawal(CommissionDTO $dto): void
     {
         // Save withdrawal
         $this->user->users[$dto->userKey]['withdrawals'][] = new Transaction(
@@ -90,7 +90,7 @@ class Commission
         );
     }
 
-    public function addDeposit(CommissionDataDTO $dto): void
+    public function addDeposit(CommissionDTO $dto): void
     {
         // Save deposit
         $this->user->users[$dto->userKey]['deposits'][] = new Transaction(

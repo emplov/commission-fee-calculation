@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\DTO;
 
-class CommissionDataDTO
+class CommissionDTO
 {
     public function __construct(
         public int $userKey,
