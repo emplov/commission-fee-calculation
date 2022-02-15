@@ -77,11 +77,11 @@ class PrivateWithdrawType extends TypeAbstract
             'end_date' => $sunday->format('Y-m-d'),
             'amount' => $amount,
             'amount_in_eur' => $amountInEur,
-            'free_amount' => self::roundNumber(strval($freeFee), (int) $extra['decimals_count']),
+            'free_amount' => $this->roundNumber((string)$freeFee, (int) $extra['decimals_count']),
             'currency' => $currency,
         ];
 
-        $res = self::castToStandartFormat(
+        $res = $this->castToStandartFormat(
             $this->math->divide(
                 $this->math->multiply(
                     $amountToCharge,
@@ -93,14 +93,8 @@ class PrivateWithdrawType extends TypeAbstract
         );
 
         $this->commission->addResult($res);
-
-        // Save last withdraw date
-        $this->user->users[$userKey]['last_withdraw_date'] = $extra['date'];
     }
 
-    /**
-     * @param int $decimalsCount
-     */
     private function removeFreeAmountFee(string $amount, string $currency, string $usedWeekFreeFeeAmount): array
     {
         $amountInEur = $this->convert->convert($amount, $currency);

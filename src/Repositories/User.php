@@ -18,10 +18,8 @@ class User
         $this->users[$userID] = [
             'user_id' => $userID,
             'user_type' => $userType,
-            'deposits_count' => 0,
-            'withdraws_count' => 0,
-            'last_withdraw_date' => null,
-            'last_deposit_date' => null,
+            'deposits_count' => '0',
+            'withdraws_count' => '0',
             'withdrawals' => [],
             'deposits' => [],
         ];

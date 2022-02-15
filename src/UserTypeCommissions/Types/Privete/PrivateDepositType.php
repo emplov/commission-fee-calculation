@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace CommissionFeeCalculation\UserTypeCommissions\Types\Privete;
 
 use CommissionFeeCalculation\Repositories\Commission;
-use CommissionFeeCalculation\Repositories\User;
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Math;
@@ -15,14 +14,11 @@ class PrivateDepositType extends TypeAbstract
 {
     private Commission $commission;
 
-    private User $user;
-
     private Math $math;
 
     public function __construct()
     {
         $this->commission = Container::getInstance()->get(Commission::class);
-        $this->user = Container::getInstance()->get(User::class);
         $this->math = Container::getInstance()->get(Math::class);
     }
 
@@ -40,7 +36,7 @@ class PrivateDepositType extends TypeAbstract
     public function handle(int $userKey, string $amount, string $currency, array $extra = []): void
     {
         $this->commission->addResult(
-            self::castToStandartFormat(
+            $this->castToStandartFormat(
                 (
                     $this->math->divide(
                         $this->math->multiply(
@@ -55,8 +51,5 @@ class PrivateDepositType extends TypeAbstract
                 $extra['decimals_count'],
             ),
         );
-
-        // Save last deposit date
-        $this->user->users[$userKey]['last_deposit_date'] = $extra['date'];
     }
 }

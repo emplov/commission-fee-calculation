@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace CommissionFeeCalculation\Repositories;
 
 use CommissionFeeCalculation\DTO\CommissionDataDTO;
-use CommissionFeeCalculation\Exceptions\CommissionTypeNotExistsException;
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\UserTypeCommissions\TypesContext;
@@ -25,9 +24,6 @@ class Commission
         $this->user = Container::getInstance()->get(User::class);
     }
 
-    /**
-     * @throws CommissionTypeNotExistsException
-     */
     public function addData(
         string $date,
         int $userID,
@@ -92,9 +88,6 @@ class Commission
                 'decimals_count' => $dto->decimalsCount,
             ],
         );
-
-        // Save last withdraw date
-        $this->user->users[$dto->userKey]['last_withdraw_date'] = $dto->date;
     }
 
     public function addDeposit(CommissionDataDTO $dto): void
@@ -123,9 +116,6 @@ class Commission
                 'decimals_count' => $dto->decimalsCount,
             ],
         );
-
-        // Save last deposit date
-        $this->user->users[$dto->userKey]['last_deposit_date'] = $dto->date;
     }
 
     public function getTypeHandler(string $commissionType, string $userType): TypesContext
@@ -145,17 +135,11 @@ class Commission
         return $context;
     }
 
-    /**
-     * Get result.
-     */
     public function getResult(): array
     {
         return $this->result;
     }
 
-    /**
-     * Get result.
-     */
     public function addResult(mixed $result): mixed
     {
         return $this->result[] = $result;
