@@ -40,10 +40,6 @@ class Dispatcher
             );
         }
 
-        $calculatedCommissions = $this->commission->getResult();
-
-        return [
-            'response' => $calculatedCommissions,
-        ];
+        return $this->commission->getResult();
     }
 }

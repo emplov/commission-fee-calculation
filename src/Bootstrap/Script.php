@@ -46,7 +46,7 @@ final class Script
         $calculatedCommissions = $dispatcher->dispatch();
 
         // Show results if everything is ok.
-        foreach ($calculatedCommissions['response'] as $commission) {
+        foreach ($calculatedCommissions as $commission) {
             echo $commission.PHP_EOL;
         }
     }
@@ -88,4 +88,3 @@ final class Script
         return $context;
     }
 }
-

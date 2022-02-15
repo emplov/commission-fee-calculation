@@ -32,12 +32,6 @@ class ParsersTest extends BaseTest
         $calculatedCommissions = $parser->dispatch();
 
         $this->assertSame(
-            13,
-            count($calculatedCommissions['response']),
-            'Data returned count not same.',
-        );
-
-        $this->assertSame(
             [
                 '0.60',
                 '3.00',
@@ -53,7 +47,7 @@ class ParsersTest extends BaseTest
                 '0.00',
                 '8612',
             ],
-            $calculatedCommissions['response'],
+            $calculatedCommissions,
             'Returned data not same.',
         );
     }
