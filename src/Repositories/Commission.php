@@ -37,29 +37,20 @@ class Commission
         string $operationCurrency,
     ): void {
         // Get user if exists
-        $userKey = $this->user->find($userID);
+        $user = $this->user->find($userID);
 
         // Create user if not exists
-        if (is_null($userKey)) {
-            $this->user->users[] = [
-                'user_id' => $userID,
-                'user_type' => $userType,
-                'deposits_count' => 0,
-                'withdraws_count' => 0,
-                'last_withdraw_date' => null,
-                'last_deposit_date' => null,
-                'withdrawals' => [],
-                'deposits' => [],
-            ];
+        if (is_null($user)) {
+            $this->user->addUser($userID, $userType);
 
-            $userKey = $this->user->find($userID);
+            $user = $this->user->find($userID);
         }
 
         // Get decimals count
         $decimalsCount = mb_strlen(explode('.', $operationAmount)[1] ?? '');
 
         $dto = new CommissionDataDTO(
-            userKey: $userKey,
+            userKey: $user['user_id'],
             date: $date,
             operationAmount: $operationAmount,
             operationCurrency: $operationCurrency,
@@ -75,12 +66,7 @@ class Commission
         }
     }
 
-    /**
-     * @return void
-     *
-     * @throws CommissionTypeNotExistsException
-     */
-    public function addWithdrawal(CommissionDataDTO $dto)
+    public function addWithdrawal(CommissionDataDTO $dto): void
     {
         // Save withdrawal
         $this->user->users[$dto->userKey]['withdrawals'][] = new Transaction(
@@ -111,12 +97,7 @@ class Commission
         $this->user->users[$dto->userKey]['last_withdraw_date'] = $dto->date;
     }
 
-    /**
-     * @return void
-     *
-     * @throws CommissionTypeNotExistsException
-     */
-    public function addDeposit(CommissionDataDTO $dto)
+    public function addDeposit(CommissionDataDTO $dto): void
     {
         // Save deposit
         $this->user->users[$dto->userKey]['deposits'][] = new Transaction(

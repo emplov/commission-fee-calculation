@@ -8,17 +8,22 @@ class User
 {
     public array $users = [];
 
-    /**
-     * Find user.
-     */
-    public function find(int $userID): string|int|null
+    public function find(int $userID): ?array
     {
-        foreach ($this->users as $key => $user) {
-            if ($user['user_id'] === $userID) {
-                return $key;
-            }
-        }
+        return $this->users[$userID] ?? null;
+    }
 
-        return null;
+    public function addUser(int $userID, string $userType): void
+    {
+        $this->users[$userID] = [
+            'user_id' => $userID,
+            'user_type' => $userType,
+            'deposits_count' => 0,
+            'withdraws_count' => 0,
+            'last_withdraw_date' => null,
+            'last_deposit_date' => null,
+            'withdrawals' => [],
+            'deposits' => [],
+        ];
     }
 }
