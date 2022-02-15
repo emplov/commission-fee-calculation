@@ -24,7 +24,7 @@ class CsvParser implements Parser
     /**
      * {@inheritDoc}
      */
-    public function parse(): Generator|array
+    public function parse(): Generator
     {
         $fileResource = File::openFile($this->filepath);
 

@@ -17,5 +17,5 @@ interface Parser
     /**
      * Parse file.
      */
-    public function parse(): Generator|array;
+    public function parse(): Generator;
 }

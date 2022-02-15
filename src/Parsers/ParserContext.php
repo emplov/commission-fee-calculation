@@ -23,7 +23,7 @@ class ParserContext
     /**
      * @throws NotAccessableExtensionException
      */
-    public function execute(): Generator|array
+    public function execute(): Generator
     {
         if (is_null($this->parser)) {
             throw new NotAccessableExtensionException();
