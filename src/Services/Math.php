@@ -33,13 +33,13 @@ class Math
 
     public function convertFloat($floatAsString): string
     {
-        $norm = strval(floatval($floatAsString));
+        $norm = (string)(float)$floatAsString;
 
         if (($e = strrchr($norm, 'E')) === false) {
             return $norm;
         }
 
-        return number_format(floatval($norm), -intval(substr($e, 1)));
+        return number_format((float)$norm, -(int) substr($e, 1));
     }
 
     public function bcceil($number): mixed
