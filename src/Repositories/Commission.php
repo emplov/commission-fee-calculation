@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\Repositories;
 
-use CommissionFeeCalculation\DTO\Objects\CommissionDataDTO;
+use CommissionFeeCalculation\DTO\CommissionDataDTO;
 use CommissionFeeCalculation\Exceptions\CommissionTypeNotExistsException;
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Container;
