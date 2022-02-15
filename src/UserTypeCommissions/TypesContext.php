@@ -15,22 +15,12 @@ class TypesContext
 
     private User $user;
 
-    /**
-     * Set strategy.
-     *
-     * @return void
-     */
-    public function setStrategy(TypeAbstract $type)
+    public function setStrategy(TypeAbstract $type): void
     {
         $this->type = $type;
         $this->user = Container::getInstance()->get(User::class);
     }
 
-    /**
-     * Execute type.
-     *
-     * @throws CommissionTypeNotExistsException
-     */
     public function execute(int $userKey, string $commissionType, string $amount, string $currency, array $extra = []): void
     {
         if (is_null($this->type)) {
@@ -40,10 +30,7 @@ class TypesContext
         $this->type->handle($userKey, $amount, $currency, $extra);
     }
 
-    /**
-     * @throws CommissionTypeNotExistsException
-     */
-    private function showError(int $userKey, string $commissionType)
+    private function showError(int $userKey, string $commissionType): void
     {
         throw new CommissionTypeNotExistsException('['.$this->user->users[$userKey]['type'].'_'.$commissionType.'] is not exists.'.PHP_EOL, );
     }
