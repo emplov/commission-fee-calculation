@@ -75,6 +75,3 @@ $script = new Script(
 
 // Run script
 $script->run();
-
-// PHP used memory
-// echo (memory_get_usage(true) / 1000 / 1024) . 'MB' . PHP_EOL;
