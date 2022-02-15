@@ -48,7 +48,7 @@ class ParsersTest extends BaseTest
                 '8612',
             ],
             $calculatedCommissions,
-            'Returned data not same.',
+            'Returned commissions not same.',
         );
     }
 }
