@@ -12,10 +12,7 @@ class ParserContext
 {
     private ?Parser $parser = null;
 
-    /**
-     * @return void
-     */
-    public function setStrategy(Parser $parser)
+    public function setStrategy(Parser $parser): void
     {
         $this->parser = $parser;
     }
