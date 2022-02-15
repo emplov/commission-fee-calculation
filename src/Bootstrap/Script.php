@@ -58,9 +58,9 @@ final class Script
     {
         $filename = strrev($filename);
 
-        $explodedData = explode('.', $filename);
+        $explodedParts = explode('.', $filename);
 
-        return strrev($explodedData[0] ?? null);
+        return strrev($explodedParts[0] ?? null);
     }
 
     /**
