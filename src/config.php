@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use CommissionFeeCalculation\Parsers\Items\CsvParser;
-use CommissionFeeCalculation\Parsers\Items\TxtParser;
 use CommissionFeeCalculation\UserTypeCommissions\Types\Business\BusinessDepositType;
 use CommissionFeeCalculation\UserTypeCommissions\Types\Business\BusinessWithdrawType;
 use CommissionFeeCalculation\UserTypeCommissions\Types\Privete\PrivateDepositType;
@@ -14,7 +13,6 @@ return [
 
     'accessible_extensions' => [
         'csv' => CsvParser::class,
-        'txt' => TxtParser::class,
     ],
 
     'user_types' => [
