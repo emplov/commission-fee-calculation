@@ -77,7 +77,7 @@ class PrivateWithdrawType extends TypeAbstract
             'end_date' => $sunday->format('Y-m-d'),
             'amount' => $amount,
             'amount_in_eur' => $amountInEur,
-            'free_amount' => $this->roundNumber((string)$freeFee, (int) $extra['decimals_count']),
+            'free_amount' => $this->roundNumber((string) $freeFee, (int) $extra['decimals_count']),
             'currency' => $currency,
         ];
 

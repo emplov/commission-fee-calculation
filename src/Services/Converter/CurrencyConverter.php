@@ -45,7 +45,7 @@ class CurrencyConverter implements Convert
 
     public function convert(string $amount, string $currency): string
     {
-        return $this->math->sub($amount, $this->getRate($currency));
+        return $this->math->sub($amount, (string) $this->getRate($currency));
     }
 
     public function getRate(string $currency)
