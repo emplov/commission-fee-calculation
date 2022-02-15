@@ -17,27 +17,16 @@ class Config
     {
         $parts = explode('.', $path);
 
-        $conf = null;
+        $configuration = self::$config;
 
         foreach ($parts as $part) {
-            if (is_null($conf)) {
-                $conf = self::set(self::$config, $part, $default);
-            } else {
-                $conf = self::set($conf, $part, $default);
+            if (!isset($configuration[$part])) {
+                return $default;
             }
+
+            $configuration = $configuration[$part];
         }
 
-        return $conf;
-    }
-
-    private static function set($conf, $part, $default)
-    {
-        if (!isset($conf[$part])) {
-            $conf = $default;
-        } else {
-            $conf = $conf[$part];
-        }
-
-        return $conf;
+        return $configuration;
     }
 }
