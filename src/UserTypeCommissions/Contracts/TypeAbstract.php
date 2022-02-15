@@ -39,7 +39,7 @@ abstract class TypeAbstract
     public function castToStandartFormat(string $amount, int $decimalsCount = 2): string
     {
         return number_format(
-            floatval(self::roundNumber($amount, $decimalsCount)),
+            (float)$this->roundNumber($amount, $decimalsCount),
             $decimalsCount,
             '.',
             '',
