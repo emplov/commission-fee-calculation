@@ -7,7 +7,6 @@ namespace CommissionFeeCalculation\Services\Converter;
 use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Math;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
 
 class CurrencyConverter implements Convert
 {
@@ -20,14 +19,7 @@ class CurrencyConverter implements Convert
         $this->math = Container::getInstance()->get(Math::class);
     }
 
-    /**
-     * Get rates from api.
-     *
-     * @return void
-     *
-     * @throws GuzzleException
-     */
-    public function fetchRates()
+    public function fetchRates(): void
     {
         if (count($this->currenciesRate) === 0) {
             $guzzleClient = new Client();
@@ -37,9 +29,9 @@ class CurrencyConverter implements Convert
                 'https://developers.paysera.com/tasks/api/currency-exchange-rates',
             );
 
-            $data = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+            $rates = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
-            $this->currenciesRate = $data['rates'];
+            $this->currenciesRate = $rates['rates'];
         }
     }
 
