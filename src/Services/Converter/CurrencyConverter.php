@@ -11,7 +11,7 @@ use GuzzleHttp\Exception\GuzzleException;
 
 class CurrencyConverter implements Convert
 {
-    public array $currencies_rate = [];
+    public array $currenciesRate = [];
 
     private Math $math;
 
@@ -29,7 +29,7 @@ class CurrencyConverter implements Convert
      */
     public function fetchRates()
     {
-        if (count($this->currencies_rate) === 0) {
+        if (count($this->currenciesRate) === 0) {
             $guzzleClient = new Client();
 
             $response = $guzzleClient->request(
@@ -37,24 +37,24 @@ class CurrencyConverter implements Convert
                 'https://developers.paysera.com/tasks/api/currency-exchange-rates',
             );
 
-            $data = json_decode($response->getBody()->getContents(), true);
+            $data = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
-            $this->currencies_rate = $data['rates'];
+            $this->currenciesRate = $data['rates'];
         }
     }
 
-    public function convert(string $amount, string $currency)
+    public function convert(string $amount, string $currency): string
     {
-        return $amount / $this->getRate($currency);
+        return $this->math->sub($amount, $this->getRate($currency));
     }
 
     public function getRate(string $currency)
     {
-        return $this->currencies_rate[$currency];
+        return $this->currenciesRate[$currency];
     }
 
     public function setRate(string $currency, float $price)
     {
-        $this->currencies_rate[$currency] = $price;
+        $this->currenciesRate[$currency] = $price;
     }
 }
