@@ -9,7 +9,7 @@ use Psr\Container\ContainerInterface;
 
 class Container implements ContainerInterface
 {
-    private static self $_instance;
+    private static ?self $_instance = null;
 
     private array $container = [];
 
