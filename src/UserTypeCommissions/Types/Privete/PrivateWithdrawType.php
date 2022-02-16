@@ -6,7 +6,6 @@ namespace CommissionFeeCalculation\UserTypeCommissions\Types\Privete;
 
 use Carbon\Carbon;
 use CommissionFeeCalculation\Repositories\Commission;
-use CommissionFeeCalculation\Repositories\User;
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Converter\Convert;
@@ -21,15 +20,12 @@ class PrivateWithdrawType extends TypeAbstract
 
     private Commission $commission;
 
-    private User $user;
-
     private Math $math;
 
     public function __construct()
     {
         $this->commission = Container::getInstance()->get(Commission::class);
         $this->convert = Container::getInstance()->get(Convert::class);
-        $this->user = Container::getInstance()->get(User::class);
         $this->math = Container::getInstance()->get(Math::class);
     }
 
@@ -52,7 +48,7 @@ class PrivateWithdrawType extends TypeAbstract
 
         $sunday = $withdrawalDate->endOfWeek();
 
-        $sum = '0';
+        $usedWeekFreeFeeAmount = '0';
 
         if (isset(self::$commissions[$userKey])) {
             foreach (self::$commissions[$userKey] as $commission) {
@@ -60,8 +56,8 @@ class PrivateWithdrawType extends TypeAbstract
                     $commission['start_date'] === $monday->format('Y-m-d') &&
                     $commission['end_date'] === $sunday->format('Y-m-d')
                 ) {
-                    $sum = $this->math->add(
-                        $sum,
+                    $usedWeekFreeFeeAmount = $this->math->add(
+                        $usedWeekFreeFeeAmount,
                         $commission['free_amount'],
                         $decimalsCount,
                     );
@@ -69,14 +65,14 @@ class PrivateWithdrawType extends TypeAbstract
             }
         }
 
-        [$amountInEur, $amountToCharge, $freeFee] = $this->removeFreeAmountFee($amount, $currency, $sum);
+        [$convertedAmount, $amountToCharge, $freeFee] = $this->removeFreeAmountFee($amount, $currency, $usedWeekFreeFeeAmount);
 
         self::$commissions[$userKey][] = [
             'withdrawal_date' => $withdrawalDate->format('Y-m-d'),
             'start_date' => $monday->format('Y-m-d'),
             'end_date' => $sunday->format('Y-m-d'),
             'amount' => $amount,
-            'amount_in_eur' => $amountInEur,
+            'amount_in_eur' => $convertedAmount,
             'free_amount' => $this->roundNumber((string) $freeFee, $decimalsCount),
             'currency' => $currency,
         ];
@@ -97,23 +93,23 @@ class PrivateWithdrawType extends TypeAbstract
 
     private function removeFreeAmountFee(string $amount, string $currency, string $usedWeekFreeFeeAmount): array
     {
-        $amountInEur = $this->convert->convert($amount, $currency);
+        $convertedAmount = $this->convert->convert($amount, $currency);
 
         $weekFreeFeeAmount = Config::get('commissions.private.withdraw.week_free_fee_amount');
 
         if ($usedWeekFreeFeeAmount >= $weekFreeFeeAmount) {
             return [
-                $amountInEur,
+                $convertedAmount,
                 $amount,
-                0,
+                '0',
             ];
         }
 
         $freeFee = $this->math->sub($weekFreeFeeAmount, $usedWeekFreeFeeAmount);
 
-        if ($amountInEur <= $freeFee) {
+        if ((float) $convertedAmount <= (float) $freeFee) {
             $amount = '0';
-            $feeToChargeInEur = $amountInEur;
+            $feeToChargeInEur = $convertedAmount;
         } else {
             $amount = $this->math->sub(
                 $amount,
@@ -126,7 +122,7 @@ class PrivateWithdrawType extends TypeAbstract
         }
 
         return [
-            $amountInEur,
+            $convertedAmount,
             $amount,
             $feeToChargeInEur,
         ];
