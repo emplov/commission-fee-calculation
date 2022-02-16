@@ -6,17 +6,18 @@ namespace CommissionFeeCalculation\Services;
 
 use CommissionFeeCalculation\DTO\CommissionDTO;
 use CommissionFeeCalculation\Entities\User;
+use CommissionFeeCalculation\Repositories\UserRepository;
 use CommissionFeeCalculation\UserTypeCommissions\TypesContext;
 
 class Commission
 {
-    private User $user;
+    private UserRepository $userRepository;
 
     private Config $config;
 
-    public function __construct(User $user, Config $config)
+    public function __construct(UserRepository $userRepository, Config $config)
     {
-        $this->user = $user;
+        $this->userRepository = $userRepository;
         $this->config = $config;
     }
 
@@ -29,24 +30,24 @@ class Commission
         string $operationCurrency,
     ): string {
         // Get user if exists
-        $user = $this->user->find($userID);
+        $user = $this->userRepository->find($userID);
 
         // Create user if not exists
         if (is_null($user)) {
-            $this->user->addUser($userID, $userType);
+            $this->userRepository->save(User::fromState($userID, $userType));
 
-            $user = $this->user->find($userID);
+            $user = $this->userRepository->find($userID);
         }
 
         // Get decimals count
         $decimalsCount = mb_strlen(explode('.', $operationAmount)[1] ?? '');
 
         $dto = new CommissionDTO(
-            userKey: $user['user_id'],
+            userKey: $user->getUserID(),
             date: $date,
             operationAmount: $operationAmount,
             operationCurrency: $operationCurrency,
-            userType: $userType,
+            userType: $user->getUserType(),
             decimalsCount: $decimalsCount,
         );
 

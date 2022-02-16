@@ -19,7 +19,7 @@ abstract class TypeAbstract
      */
     abstract public function handle(int $userKey, string $amount, string $currency, string $date, int $decimalsCount): string;
 
-    public function roundNumber(string $amount, int $decimalsCount = 2): string|float
+    public function roundNumber(string $amount, int $decimalsCount = 2): string
     {
         /** @var Math $math */
         $math = Container::getInstance()->get(Math::class);
