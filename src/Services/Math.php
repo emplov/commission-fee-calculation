@@ -46,13 +46,13 @@ class Math
     {
         if (str_contains($number, '.')) {
             if (preg_match("~\.[0]+$~", $number)) {
-                return $this->bcround($number, 0);
+                return $this->bcround($number, 5);
             }
             if ($number[0] !== '-') {
-                return bcadd($number, '1', 0);
+                return bcadd($number, '1', 5);
             }
 
-            return bcsub($number, '0', 0);
+            return bcsub($number, '0', 5);
         }
 
         return $number;
@@ -62,19 +62,19 @@ class Math
     {
         if (str_contains($number, '.')) {
             if (preg_match("~\.[0]+$~", $number)) {
-                return $this->bcround($number, 0);
+                return $this->bcround($number, 5);
             }
             if ($number[0] !== '-') {
-                return bcadd($number, '0', 0);
+                return bcadd($number, '0', 5);
             }
 
-            return bcsub($number, '1', 0);
+            return bcsub($number, '1', 5);
         }
 
         return $number;
     }
 
-    public function bcround($number, $precision = 0): mixed
+    public function bcround($number, $precision = 5): mixed
     {
         if (str_contains($number, '.')) {
             if ($number[0] !== '-') {
