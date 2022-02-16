@@ -11,9 +11,11 @@ class Container implements ContainerInterface
 {
     private static ?self $_instance = null;
 
-    private array $container = [];
+    private array $definitions = [];
 
-    public static function getInstance(): ?Container
+    private array $resolvedEntries = [];
+
+    public static function getInstance(): self
     {
         if (is_null(self::$_instance)) {
             self::$_instance = new self();
@@ -25,19 +27,34 @@ class Container implements ContainerInterface
     public function get(string $id)
     {
         if (!$this->has($id)) {
-            throw new Exception('['.$id.'] container not found.');
+            throw new Exception("No entry or class found for '$id'");
         }
 
-        return $this->container[$id];
+        if (array_key_exists($id, $this->resolvedEntries)) {
+            return $this->resolvedEntries[$id];
+        }
+
+        $value = $this->definitions[$id];
+
+        if ($value instanceof \Closure) {
+            $value = $value($this);
+        }
+
+        $this->resolvedEntries[$id] = $value;
+
+        return $value;
     }
 
     public function has(string $id): bool
     {
-        return isset($this->container[$id]);
+        return array_key_exists($id, $this->definitions) || array_key_exists($id, $this->resolvedEntries);
     }
 
-    public function add(string $id, mixed $container)
+    public function addDefinitions(array $definitions): void
     {
-        $this->container[$id] = $container;
+        $this->definitions = array_merge(
+            $definitions,
+            [ContainerInterface::class => $this]
+        );
     }
 }

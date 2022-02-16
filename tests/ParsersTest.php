@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\Tests;
 
+use CommissionFeeCalculation\Services\Commission;
+use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Dispatcher;
 
 class ParsersTest extends BaseTest
@@ -24,10 +26,11 @@ class ParsersTest extends BaseTest
             ['2016-01-10', '3', 'private', 'withdraw', '1000.00', 'EUR'],
             ['2016-02-15', '1', 'private', 'withdraw', '300.00', 'EUR'],
             ['2016-02-19', '5', 'private', 'withdraw', '3000000', 'JPY'],
-
         ];
 
-        $parser = new Dispatcher($transactions);
+        $commission = Container::getInstance()->get(Commission::class);
+
+        $parser = new Dispatcher($transactions, $commission);
 
         $calculatedCommissions = $parser->dispatch();
 

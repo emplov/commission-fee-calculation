@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\Services;
 
-use CommissionFeeCalculation\Repositories\Commission;
 use Exception;
 use Generator;
 
@@ -18,9 +17,10 @@ class Dispatcher
      * Object's constructor.
      */
     public function __construct(
-        array|Generator $transactions
+        array|Generator $transactions,
+        Commission $commission,
     ) {
-        $this->commission = Container::getInstance()->get(Commission::class);
+        $this->commission = $commission;
         $this->transactions = $transactions;
     }
 
@@ -29,8 +29,10 @@ class Dispatcher
      */
     public function dispatch(): array
     {
+        $calculatedCommissions = [];
+
         foreach ($this->transactions as $transaction) {
-            $this->commission->addData(
+            $calculatedCommissions[] = $this->commission->addTransaction(
                 $transaction[0],
                 (int) $transaction[1],
                 $transaction[2],
@@ -40,6 +42,6 @@ class Dispatcher
             );
         }
 
-        return $this->commission->getResult();
+        return $calculatedCommissions;
     }
 }
