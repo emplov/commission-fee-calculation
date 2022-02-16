@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\Tests;
 
+use CommissionFeeCalculation\Services\Commission;
+use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Dispatcher;
 
 class ParsersTest extends BaseTest
@@ -27,7 +29,9 @@ class ParsersTest extends BaseTest
 
         ];
 
-        $parser = new Dispatcher($transactions);
+        $commission = Container::getInstance()->get(Commission::class);
+
+        $parser = new Dispatcher($transactions, $commission);
 
         $calculatedCommissions = $parser->dispatch();
 

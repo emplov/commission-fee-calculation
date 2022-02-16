@@ -19,12 +19,9 @@ class File
      */
     public static function openFile(string $path)
     {
-        return fopen($path, 'r');
+        return fopen($path, 'rb');
     }
 
-    /**
-     * @param $openedFile
-     */
     public static function closeFile($openedFile): bool
     {
         return fclose($openedFile);

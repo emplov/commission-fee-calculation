@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\UserTypeCommissions;
 
+use CommissionFeeCalculation\Entities\User;
 use CommissionFeeCalculation\Exceptions\CommissionTypeNotExistsException;
-use CommissionFeeCalculation\Repositories\User;
 use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
 

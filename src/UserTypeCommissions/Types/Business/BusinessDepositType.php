@@ -13,9 +13,12 @@ class BusinessDepositType extends TypeAbstract
 {
     private Math $math;
 
+    private Config $config;
+
     public function __construct()
     {
         $this->math = Container::getInstance()->get(Math::class);
+        $this->config = Container::getInstance()->get(Config::class);
     }
 
     /**
@@ -35,7 +38,7 @@ class BusinessDepositType extends TypeAbstract
             $this->math->divide(
                 $this->math->multiply(
                     $amount,
-                    Config::get('commissions.business.deposit'),
+                    $this->config->get('commissions.business.deposit'),
                     $decimalsCount,
                 ),
                 '100',

@@ -13,9 +13,12 @@ class PrivateDepositType extends TypeAbstract
 {
     private Math $math;
 
+    private Config $config;
+
     public function __construct()
     {
         $this->math = Container::getInstance()->get(Math::class);
+        $this->config = Container::getInstance()->get(Config::class);
     }
 
     /**
@@ -35,7 +38,7 @@ class PrivateDepositType extends TypeAbstract
             $this->math->divide(
                 $this->math->multiply(
                     $amount,
-                    Config::get('commissions.private.deposit'),
+                    $this->config->get('commissions.private.deposit'),
                     $decimalsCount,
                 ),
                 '100',

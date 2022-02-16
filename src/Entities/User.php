@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CommissionFeeCalculation\Repositories;
+namespace CommissionFeeCalculation\Entities;
 
 class User
 {
@@ -18,15 +18,6 @@ class User
         $this->users[$userID] = [
             'user_id' => $userID,
             'user_type' => $userType,
-            'deposits_count' => '0',
-            'withdraws_count' => '0',
-            'withdrawals' => [],
-            'deposits' => [],
         ];
-    }
-
-    public function addTransaction(int $userID, Transaction $transaction, string $type): void
-    {
-        $this->users[$userID][$type][] = $transaction;
     }
 }

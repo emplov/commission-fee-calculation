@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace CommissionFeeCalculation\UserTypeCommissions\Types\Privete;
 
 use Carbon\Carbon;
-use CommissionFeeCalculation\Repositories\Commission;
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Converter\Convert;
@@ -18,13 +17,13 @@ class PrivateWithdrawType extends TypeAbstract
 
     private Convert $convert;
 
-    private Commission $commission;
-
     private Math $math;
+
+    private Config $config;
 
     public function __construct()
     {
-        $this->commission = Container::getInstance()->get(Commission::class);
+        $this->config = Container::getInstance()->get(Config::class);
         $this->convert = Container::getInstance()->get(Convert::class);
         $this->math = Container::getInstance()->get(Math::class);
     }
@@ -81,7 +80,7 @@ class PrivateWithdrawType extends TypeAbstract
             $this->math->divide(
                 $this->math->multiply(
                     $amountToCharge,
-                    Config::get('commissions.private.withdraw.percent'),
+                    $this->config->get('commissions.private.withdraw.percent'),
                 ),
                 '100',
             ),
@@ -93,7 +92,7 @@ class PrivateWithdrawType extends TypeAbstract
     {
         $convertedAmount = $this->convert->convert($amount, $currency);
 
-        $weekFreeFeeAmount = Config::get('commissions.private.withdraw.week_free_fee_amount');
+        $weekFreeFeeAmount = $this->config->get('commissions.private.withdraw.week_free_fee_amount');
 
         if ($usedWeekFreeFeeAmount >= $weekFreeFeeAmount) {
             return [

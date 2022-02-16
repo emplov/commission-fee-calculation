@@ -13,8 +13,11 @@ class BusinessWithdrawType extends TypeAbstract
 {
     private Math $math;
 
+    private Config $config;
+
     public function __construct()
     {
+        $this->config = Container::getInstance()->get(Config::class);
         $this->math = Container::getInstance()->get(Math::class);
     }
 
@@ -35,7 +38,7 @@ class BusinessWithdrawType extends TypeAbstract
             $this->math->divide(
                 $this->math->multiply(
                     $amount,
-                    Config::get('commissions.business.withdraw'),
+                    $this->config->get('commissions.business.withdraw'),
                     $decimalsCount,
                 ),
                 '100',
