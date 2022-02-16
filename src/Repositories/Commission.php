@@ -65,7 +65,7 @@ class Commission
     public function addWithdrawal(CommissionDTO $dto): void
     {
         // Save withdrawal
-        $this->user->addTransaction($dto->userKey,  new Transaction(
+        $this->user->addTransaction($dto->userKey, new Transaction(
             $dto->date,
             Transaction::TYPE_WITHDRAWAL,
             $dto->operationAmount,
@@ -91,7 +91,7 @@ class Commission
     public function addDeposit(CommissionDTO $dto): void
     {
         // Save deposit
-        $this->user->addTransaction($dto->userKey,  new Transaction(
+        $this->user->addTransaction($dto->userKey, new Transaction(
             $dto->date,
             Transaction::TYPE_WITHDRAWAL,
             $dto->operationAmount,

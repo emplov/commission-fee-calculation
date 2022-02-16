@@ -28,8 +28,7 @@ class TypesContext
         string $currency,
         string $date,
         int $decimalsCount,
-    ): void
-    {
+    ): void {
         if (is_null($this->type)) {
             $this->showError($userKey, $commissionType);
         }
