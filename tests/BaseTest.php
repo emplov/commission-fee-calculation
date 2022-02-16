@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\Tests;
 
-use CommissionFeeCalculation\Services\Converter\CurrencyConverter;
-use CommissionFeeCalculation\Services\Converter\Convert;
-use CommissionFeeCalculation\Repositories\Commission;
-use CommissionFeeCalculation\Services\Container;
-use CommissionFeeCalculation\Repositories\User;
+use CommissionFeeCalculation\Entities\User;
+use CommissionFeeCalculation\Repositories\Persistence\InMemoryPersistence;
+use CommissionFeeCalculation\Repositories\Persistence\Persistence;
+use CommissionFeeCalculation\Repositories\UserRepository;
+use CommissionFeeCalculation\Services\Commission;
 use CommissionFeeCalculation\Services\Config;
+use CommissionFeeCalculation\Services\Container;
+use CommissionFeeCalculation\Services\Converter\Convert;
+use CommissionFeeCalculation\Services\Converter\CurrencyConverter;
 use CommissionFeeCalculation\Services\Math;
-
+use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
 
 abstract class BaseTest extends TestCase
@@ -22,17 +25,37 @@ abstract class BaseTest extends TestCase
 
         $container = Container::getInstance();
 
-        $container->add(Math::class, new Math());
-        $converter = new CurrencyConverter();
+        $container->addDefinitions([
+            Math::class => new Math(),
 
-        $converter->setRate('EUR', 1);
-        $converter->setRate('USD', 1.1497);
-        $converter->setRate('JPY', 129.53);
+            Persistence::class => static function (ContainerInterface $container) {
+                return new InMemoryPersistence();
+            },
 
-        $container->add(Convert::class, $converter);
-        $container->add(User::class, new User());
-        $container->add(Commission::class, new Commission());
+            UserRepository::class => static function (ContainerInterface $container) {
+                return new UserRepository($container->get(Persistence::class));
+            },
 
-        Config::setConfig(include 'src/config.php');
+            Config::class => static function (ContainerInterface $container) {
+                $config = new Config();
+                $config->setConfig(include __DIR__ . './../src/config.php');
+
+                return $config;
+            },
+
+            Convert::class => static function (ContainerInterface $container) {
+                $converter = new CurrencyConverter();
+
+                $converter->setRate('EUR', 1);
+                $converter->setRate('USD', 1.1497);
+                $converter->setRate('JPY', 129.53);
+
+                return $converter;
+            },
+
+            Commission::class => static function (ContainerInterface $container) {
+                return new Commission($container->get(UserRepository::class), $container->get(Config::class));
+            },
+        ]);
     }
 }

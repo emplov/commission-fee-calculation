@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace CommissionFeeCalculation\Bootstrap;
 
 use CommissionFeeCalculation\Parsers\ParserContext;
+use CommissionFeeCalculation\Services\Commission;
 use CommissionFeeCalculation\Services\Config;
+use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Dispatcher;
 use Exception;
 
@@ -16,6 +18,10 @@ final class Script
 {
     private string $extension;
 
+    private Config $config;
+
+    private Commission $commission;
+
     public function __construct(
         private string $filepath,
         private string $separator = ',',
@@ -23,6 +29,8 @@ final class Script
         private string $escape = '\\',
     ) {
         $this->extension = $this->getExtension($filepath);
+        $this->config = Container::getInstance()->get(Config::class);
+        $this->commission = Container::getInstance()->get(Commission::class);
     }
 
     /**
@@ -40,6 +48,7 @@ final class Script
         // Create dispatcher
         $dispatcher = new Dispatcher(
             transactions: $transactions,
+            commission: $this->commission,
         );
 
         // Parse file and get result
@@ -70,7 +79,7 @@ final class Script
     {
         $context = new ParserContext();
 
-        foreach (Config::get('accessible_extensions') as $accessibleExtension => $accessibleType) {
+        foreach ($this->config->get('accessible_extensions') as $accessibleExtension => $accessibleType) {
             if ($extension === $accessibleExtension) {
                 $context->setStrategy(
                     new $accessibleType(

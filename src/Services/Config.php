@@ -6,18 +6,18 @@ namespace CommissionFeeCalculation\Services;
 
 class Config
 {
-    private static array $config;
+    private array $config;
 
-    public static function setConfig(array $config)
+    public function setConfig(array $config): void
     {
-        self::$config = $config;
+        $this->config = $config;
     }
 
-    public static function get(string $path, mixed $default = null)
+    public function get(string $path, mixed $default = null)
     {
         $parts = explode('.', $path);
 
-        $configuration = self::$config;
+        $configuration = $this->config;
 
         foreach ($parts as $part) {
             if (!isset($configuration[$part])) {

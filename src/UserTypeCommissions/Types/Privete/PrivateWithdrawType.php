@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace CommissionFeeCalculation\UserTypeCommissions\Types\Privete;
 
 use Carbon\Carbon;
-use CommissionFeeCalculation\Repositories\Commission;
+use CommissionFeeCalculation\Entities\UsedCommission;
+use CommissionFeeCalculation\Repositories\UserRepository;
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Converter\Convert;
@@ -14,17 +15,18 @@ use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
 
 class PrivateWithdrawType extends TypeAbstract
 {
-    public static array $commissions = [];
-
     private Convert $convert;
-
-    private Commission $commission;
 
     private Math $math;
 
+    private Config $config;
+
+    private UserRepository $userRepository;
+
     public function __construct()
     {
-        $this->commission = Container::getInstance()->get(Commission::class);
+        $this->userRepository = Container::getInstance()->get(UserRepository::class);
+        $this->config = Container::getInstance()->get(Config::class);
         $this->convert = Container::getInstance()->get(Convert::class);
         $this->math = Container::getInstance()->get(Math::class);
     }
@@ -40,8 +42,14 @@ class PrivateWithdrawType extends TypeAbstract
     /**
      * {@inheritDoc}
      */
-    public function handle(int $userKey, string $amount, string $currency, string $date, int $decimalsCount): void
+    public function handle(int $userKey, string $amount, string $currency, string $date, int $decimalsCount): string
     {
+        $user = $this->userRepository->find($userKey);
+
+        if (!$user) {
+            throw new \Exception("User [$userKey] not found.");
+        }
+
         $withdrawalDate = Carbon::make($date);
 
         $monday = $withdrawalDate->startOfWeek();
@@ -50,56 +58,53 @@ class PrivateWithdrawType extends TypeAbstract
 
         $usedWeekFreeFeeAmount = '0';
 
-        if (isset(self::$commissions[$userKey])) {
-            foreach (self::$commissions[$userKey] as $commission) {
+        if ($user->hasTransactions(self::type())) {
+            /** @var UsedCommission $commission */
+            foreach ($user->getTransactionsByType(self::type()) as $commission) {
                 if (
-                    $commission['start_date'] === $monday->format('Y-m-d') &&
-                    $commission['end_date'] === $sunday->format('Y-m-d')
+                    $commission->getWeekStartDate() === $monday->format('Y-m-d') &&
+                    $commission->getWeekEndDate() === $sunday->format('Y-m-d')
                 ) {
                     $usedWeekFreeFeeAmount = $this->math->add(
                         $usedWeekFreeFeeAmount,
-                        $commission['free_amount'],
+                        $commission->getFreeAmount(),
                         $decimalsCount,
                     );
                 }
             }
         }
 
-        [$convertedAmount, $amountToCharge, $freeFee] = $this->removeFreeAmountFee($amount, $currency, $usedWeekFreeFeeAmount);
+        [$amountToCharge, $freeFee] = $this->removeFreeAmountFee($amount, $currency, $usedWeekFreeFeeAmount);
 
-        self::$commissions[$userKey][] = [
-            'withdrawal_date' => $withdrawalDate->format('Y-m-d'),
-            'start_date' => $monday->format('Y-m-d'),
-            'end_date' => $sunday->format('Y-m-d'),
-            'amount' => $amount,
-            'amount_in_eur' => $convertedAmount,
-            'free_amount' => $this->roundNumber((string) $freeFee, $decimalsCount),
-            'currency' => $currency,
-        ];
+        $user->addTransaction(self::type(), new UsedCommission(
+            $date,
+            $monday->format('Y-m-d'),
+            $sunday->format('Y-m-d'),
+            $this->roundNumber((string) $freeFee, $decimalsCount),
+        ));
 
-        $res = $this->castToStandartFormat(
+        $this->userRepository->save($user);
+
+        return $this->castToStandartFormat(
             $this->math->divide(
                 $this->math->multiply(
                     $amountToCharge,
-                    Config::get('commissions.private.withdraw.percent'),
+                    $this->config->get('commissions.private.withdraw.percent'),
                 ),
                 '100',
             ),
             $decimalsCount,
         );
-
-        $this->commission->addResult($res);
     }
 
     private function removeFreeAmountFee(string $amount, string $currency, string $usedWeekFreeFeeAmount): array
     {
         $convertedAmount = $this->convert->convert($amount, $currency);
 
-        $weekFreeFeeAmount = Config::get('commissions.private.withdraw.week_free_fee_amount');
+        $weekFreeFeeAmount = $this->config->get('commissions.private.withdraw.week_free_fee_amount');
 
         if ($usedWeekFreeFeeAmount >= $weekFreeFeeAmount) {
             return [
-                $convertedAmount,
                 $amount,
                 '0',
             ];
@@ -122,7 +127,6 @@ class PrivateWithdrawType extends TypeAbstract
         }
 
         return [
-            $convertedAmount,
             $amount,
             $feeToChargeInEur,
         ];

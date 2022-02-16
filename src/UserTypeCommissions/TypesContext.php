@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace CommissionFeeCalculation\UserTypeCommissions;
 
 use CommissionFeeCalculation\Exceptions\CommissionTypeNotExistsException;
-use CommissionFeeCalculation\Repositories\User;
+use CommissionFeeCalculation\Repositories\UserRepository;
 use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
 
@@ -13,12 +13,12 @@ class TypesContext
 {
     private ?TypeAbstract $type = null;
 
-    private User $user;
+    private UserRepository $userRepository;
 
     public function setStrategy(TypeAbstract $type): void
     {
         $this->type = $type;
-        $this->user = Container::getInstance()->get(User::class);
+        $this->userRepository = Container::getInstance()->get(UserRepository::class);
     }
 
     public function execute(
@@ -28,16 +28,18 @@ class TypesContext
         string $currency,
         string $date,
         int $decimalsCount,
-    ): void {
+    ): string {
         if (is_null($this->type)) {
             $this->showError($userKey, $commissionType);
         }
 
-        $this->type->handle($userKey, $amount, $currency, $date, $decimalsCount);
+        return $this->type->handle($userKey, $amount, $currency, $date, $decimalsCount);
     }
 
     private function showError(int $userKey, string $commissionType): void
     {
-        throw new CommissionTypeNotExistsException('['.$this->user->find($userKey)['user_type'].'_'.$commissionType.'] is not exists.'.PHP_EOL, );
+        $user = $this->userRepository->find($userKey);
+
+        throw new CommissionTypeNotExistsException('['.$user->getUserType().'_'.$commissionType.'] is not exists.'.PHP_EOL, );
     }
 }
