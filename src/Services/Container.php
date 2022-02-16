@@ -13,7 +13,7 @@ class Container implements ContainerInterface
 
     private array $container = [];
 
-    public static function getInstance(): ?Container
+    public static function getInstance(): self
     {
         if (is_null(self::$_instance)) {
             self::$_instance = new self();
