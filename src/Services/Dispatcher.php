@@ -29,8 +29,10 @@ class Dispatcher
      */
     public function dispatch(): array
     {
+        $calculatedCommissions = [];
+
         foreach ($this->transactions as $transaction) {
-            $this->commission->addData(
+            $calculatedCommissions[] = $this->commission->addData(
                 $transaction[0],
                 (int) $transaction[1],
                 $transaction[2],
@@ -40,6 +42,6 @@ class Dispatcher
             );
         }
 
-        return $this->commission->getResult();
+        return $calculatedCommissions;
     }
 }

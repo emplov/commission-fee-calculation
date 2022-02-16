@@ -11,8 +11,6 @@ use CommissionFeeCalculation\UserTypeCommissions\TypesContext;
 
 class Commission
 {
-    public array $result = [];
-
     public const WITHDRAW_TYPE = 'withdraw';
 
     public const DEPOSIT_TYPE = 'deposit';
@@ -31,7 +29,7 @@ class Commission
         string $operationType,
         string $operationAmount,
         string $operationCurrency,
-    ): void {
+    ): string {
         // Get user if exists
         $user = $this->user->find($userID);
 
@@ -54,15 +52,19 @@ class Commission
             decimalsCount: $decimalsCount,
         );
 
+        $calculatedCommission = '';
+
         // Save operation
         if ($operationType === self::WITHDRAW_TYPE) {
-            $this->addWithdrawal($dto);
+            $calculatedCommission = $this->addWithdrawal($dto);
         } elseif ($operationType === self::DEPOSIT_TYPE) {
-            $this->addDeposit($dto);
+            $calculatedCommission = $this->addDeposit($dto);
         }
+
+        return $calculatedCommission;
     }
 
-    public function addWithdrawal(CommissionDTO $dto): void
+    public function addWithdrawal(CommissionDTO $dto): string
     {
         // Save withdrawal
         $this->user->addTransaction($dto->userKey, new Transaction(
@@ -78,7 +80,7 @@ class Commission
             userType: $dto->userType,
         );
 
-        $context->execute(
+        return $context->execute(
             userKey: $dto->userKey,
             commissionType: self::WITHDRAW_TYPE,
             amount: $dto->operationAmount,
@@ -88,7 +90,7 @@ class Commission
         );
     }
 
-    public function addDeposit(CommissionDTO $dto): void
+    public function addDeposit(CommissionDTO $dto): string
     {
         // Save deposit
         $this->user->addTransaction($dto->userKey, new Transaction(
@@ -104,7 +106,7 @@ class Commission
             userType: $dto->userType,
         );
 
-        $context->execute(
+        return $context->execute(
             userKey: $dto->userKey,
             commissionType: self::DEPOSIT_TYPE,
             amount: $dto->operationAmount,
@@ -129,15 +131,5 @@ class Commission
         }
 
         return $context;
-    }
-
-    public function getResult(): array
-    {
-        return $this->result;
-    }
-
-    public function addResult(mixed $result): mixed
-    {
-        return $this->result[] = $result;
     }
 }

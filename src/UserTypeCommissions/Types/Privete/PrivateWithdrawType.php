@@ -40,7 +40,7 @@ class PrivateWithdrawType extends TypeAbstract
     /**
      * {@inheritDoc}
      */
-    public function handle(int $userKey, string $amount, string $currency, string $date, int $decimalsCount): void
+    public function handle(int $userKey, string $amount, string $currency, string $date, int $decimalsCount): string
     {
         $withdrawalDate = Carbon::make($date);
 
@@ -77,7 +77,7 @@ class PrivateWithdrawType extends TypeAbstract
             'currency' => $currency,
         ];
 
-        $res = $this->castToStandartFormat(
+        return $this->castToStandartFormat(
             $this->math->divide(
                 $this->math->multiply(
                     $amountToCharge,
@@ -87,8 +87,6 @@ class PrivateWithdrawType extends TypeAbstract
             ),
             $decimalsCount,
         );
-
-        $this->commission->addResult($res);
     }
 
     private function removeFreeAmountFee(string $amount, string $currency, string $usedWeekFreeFeeAmount): array

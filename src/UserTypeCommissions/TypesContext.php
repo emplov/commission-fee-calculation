@@ -28,12 +28,12 @@ class TypesContext
         string $currency,
         string $date,
         int $decimalsCount,
-    ): void {
+    ): string {
         if (is_null($this->type)) {
             $this->showError($userKey, $commissionType);
         }
 
-        $this->type->handle($userKey, $amount, $currency, $date, $decimalsCount);
+        return $this->type->handle($userKey, $amount, $currency, $date, $decimalsCount);
     }
 
     private function showError(int $userKey, string $commissionType): void
