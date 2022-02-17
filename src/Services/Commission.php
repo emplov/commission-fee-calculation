@@ -40,7 +40,7 @@ class Commission
         }
 
         // Get decimals count
-        $decimalsCount = $this->config->get('currency_decimal_part.' . $operationCurrency);
+        $decimalsCount = $this->config->get('currency_decimal_part.'.$operationCurrency);
 
         $dto = new CommissionDTO(
             userKey: $user->getUserID(),
