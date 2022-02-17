@@ -39,4 +39,10 @@ return [
             ],
         ],
     ],
+
+    'currency_decimal_part' => [
+        'USD' => 2,
+        'EUR' => 2,
+        'JPY' => 0,
+    ],
 ];
