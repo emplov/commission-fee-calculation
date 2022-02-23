@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use CommissionFeeCalculation\Entities\UsedCommission;
 use CommissionFeeCalculation\Repositories\UserRepository;
 use CommissionFeeCalculation\Services\Config;
-use CommissionFeeCalculation\Services\Converter\Convert;
+use CommissionFeeCalculation\Services\Converter\Converter;
 use CommissionFeeCalculation\Services\Math;
 use CommissionFeeCalculation\Services\NumberFormat;
 use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
@@ -18,7 +18,7 @@ class PrivateWithdrawType implements TypeAbstract
     public function __construct(
         private UserRepository $userRepository,
         private Config $config,
-        private Convert $convert,
+        private Converter $convert,
         private Math $math,
         private NumberFormat $numberFormat,
     ) {

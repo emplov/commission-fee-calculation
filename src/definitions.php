@@ -7,7 +7,7 @@ use CommissionFeeCalculation\Repositories\Persistence\Persistence;
 use CommissionFeeCalculation\Repositories\UserRepository;
 use CommissionFeeCalculation\Services\Commission;
 use CommissionFeeCalculation\Services\Config;
-use CommissionFeeCalculation\Services\Converter\Convert;
+use CommissionFeeCalculation\Services\Converter\Converter;
 use CommissionFeeCalculation\Services\Converter\CurrencyConverter;
 use CommissionFeeCalculation\Services\File;
 use CommissionFeeCalculation\Services\Math;
@@ -38,7 +38,7 @@ return [
         return $config;
     },
 
-    Convert::class => static function (ContainerInterface $container) {
+    Converter::class => static function (ContainerInterface $container) {
         $converter = new CurrencyConverter();
         $converter->fetchRates();
 
