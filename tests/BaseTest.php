@@ -12,7 +12,9 @@ use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Converter\Converter;
 use CommissionFeeCalculation\Services\Converter\CurrencyConverter;
+use CommissionFeeCalculation\Services\File;
 use CommissionFeeCalculation\Services\Math;
+use CommissionFeeCalculation\Services\NumberFormat;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
@@ -27,6 +29,12 @@ abstract class BaseTest extends TestCase
         $container->addDefinitions([
             Math::class => new Math(),
 
+            File::class => new File(),
+
+            NumberFormat::class => static function (ContainerInterface $container) {
+                return new NumberFormat($container->get(Math::class));
+            },
+
             Persistence::class => static function (ContainerInterface $container) {
                 return new InMemoryPersistence();
             },
@@ -37,7 +45,7 @@ abstract class BaseTest extends TestCase
 
             Config::class => static function (ContainerInterface $container) {
                 $config = new Config();
-                $config->setConfig(include __DIR__.'./../src/config.php');
+                $config->setConfig(require __DIR__.'./../src/config.php');
 
                 return $config;
             },
