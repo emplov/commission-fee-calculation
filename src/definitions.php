@@ -9,11 +9,14 @@ use CommissionFeeCalculation\Services\Commission;
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Converter\Convert;
 use CommissionFeeCalculation\Services\Converter\CurrencyConverter;
+use CommissionFeeCalculation\Services\File;
 use CommissionFeeCalculation\Services\Math;
 use Psr\Container\ContainerInterface;
 
 return [
     Math::class => new Math(),
+
+    File::class => new File(),
 
     Persistence::class => static function (ContainerInterface $container) {
         return new InMemoryPersistence();
