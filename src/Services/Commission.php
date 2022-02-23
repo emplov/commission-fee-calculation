@@ -6,7 +6,6 @@ namespace CommissionFeeCalculation\Services;
 
 use CommissionFeeCalculation\DTO\CommissionDTO;
 use CommissionFeeCalculation\Entities\User;
-use CommissionFeeCalculation\Exceptions\ScriptException;
 use CommissionFeeCalculation\Repositories\UserRepository;
 use CommissionFeeCalculation\UserTypeCommissions\TypesContext;
 
