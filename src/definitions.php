@@ -33,7 +33,7 @@ return [
 
     Config::class => static function (ContainerInterface $container) {
         $config = new Config();
-        $config->setConfig(include 'config.php');
+        $config->setConfig(require 'config.php');
 
         return $config;
     },
