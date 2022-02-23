@@ -11,12 +11,17 @@ use CommissionFeeCalculation\Services\Converter\Convert;
 use CommissionFeeCalculation\Services\Converter\CurrencyConverter;
 use CommissionFeeCalculation\Services\File;
 use CommissionFeeCalculation\Services\Math;
+use CommissionFeeCalculation\Services\NumberFormat;
 use Psr\Container\ContainerInterface;
 
 return [
     Math::class => new Math(),
 
     File::class => new File(),
+
+    NumberFormat::class => static function (ContainerInterface $container) {
+        return new NumberFormat($container->get(Math::class));
+    },
 
     Persistence::class => static function (ContainerInterface $container) {
         return new InMemoryPersistence();

@@ -6,18 +6,16 @@ namespace CommissionFeeCalculation\UserTypeCommissions\Types\Business;
 
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Math;
+use CommissionFeeCalculation\Services\NumberFormat;
 use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
 
-class BusinessWithdrawType extends TypeAbstract
+class BusinessWithdrawType implements TypeAbstract
 {
-    private Math $math;
-
-    private Config $config;
-
-    public function __construct(Config $config, Math $math)
-    {
-        $this->config = $config;
-        $this->math = $math;
+    public function __construct(
+        private Config $config,
+        private Math $math,
+        private NumberFormat $numberFormat,
+    ) {
     }
 
     /**
@@ -33,7 +31,7 @@ class BusinessWithdrawType extends TypeAbstract
      */
     public function handle(int $userKey, string $amount, string $currency, string $date, int $decimalsCount): string
     {
-        return $this->castToStandartFormat(
+        return $this->numberFormat->castToStandartFormat(
             $this->math->divide(
                 $this->math->multiply(
                     $amount,

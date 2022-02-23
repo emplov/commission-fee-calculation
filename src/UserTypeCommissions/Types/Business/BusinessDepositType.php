@@ -6,18 +6,16 @@ namespace CommissionFeeCalculation\UserTypeCommissions\Types\Business;
 
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Math;
+use CommissionFeeCalculation\Services\NumberFormat;
 use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
 
-class BusinessDepositType extends TypeAbstract
+class BusinessDepositType implements TypeAbstract
 {
-    private Math $math;
-
-    private Config $config;
-
-    public function __construct(Math $math, Config $config)
-    {
-        $this->math = $math;
-        $this->config = $config;
+    public function __construct(
+        private Math $math,
+        private Config $config,
+        private NumberFormat $numberFormat,
+    ) {
     }
 
     /**
@@ -33,7 +31,7 @@ class BusinessDepositType extends TypeAbstract
      */
     public function handle(int $userKey, string $amount, string $currency, string $date, int $decimalsCount): string
     {
-        return $this->castToStandartFormat(
+        return $this->numberFormat->castToStandartFormat(
             $this->math->divide(
                 $this->math->multiply(
                     $amount,

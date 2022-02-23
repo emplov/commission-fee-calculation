@@ -10,24 +10,18 @@ use CommissionFeeCalculation\Repositories\UserRepository;
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Converter\Convert;
 use CommissionFeeCalculation\Services\Math;
+use CommissionFeeCalculation\Services\NumberFormat;
 use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
 
-class PrivateWithdrawType extends TypeAbstract
+class PrivateWithdrawType implements TypeAbstract
 {
-    private Convert $convert;
-
-    private Math $math;
-
-    private Config $config;
-
-    private UserRepository $userRepository;
-
-    public function __construct(UserRepository $userRepository, Config $config, Convert $convert, Math $math)
-    {
-        $this->userRepository = $userRepository;
-        $this->config = $config;
-        $this->convert = $convert;
-        $this->math = $math;
+    public function __construct(
+        private UserRepository $userRepository,
+        private Config $config,
+        private Convert $convert,
+        private Math $math,
+        private NumberFormat $numberFormat,
+    ) {
     }
 
     /**
@@ -79,12 +73,12 @@ class PrivateWithdrawType extends TypeAbstract
             $date,
             $monday->format('Y-m-d'),
             $sunday->format('Y-m-d'),
-            $this->roundNumber((string) $freeFee, $decimalsCount),
+            $this->numberFormat->roundNumber((string) $freeFee, $decimalsCount),
         ));
 
         $this->userRepository->save($user);
 
-        return $this->castToStandartFormat(
+        return $this->numberFormat->castToStandartFormat(
             $this->math->divide(
                 $this->math->multiply(
                     $amountToCharge,
