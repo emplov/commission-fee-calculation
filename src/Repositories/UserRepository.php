@@ -22,7 +22,7 @@ class UserRepository
             return null;
         }
 
-        return User::fromState($user['user_id'], $user['user_type'], $user['transactions']);
+        return new User($user['user_id'], $user['user_type'], $user['transactions']);
     }
 
     public function save(User $user): void

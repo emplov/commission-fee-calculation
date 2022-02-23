@@ -13,15 +13,6 @@ class User
     ) {
     }
 
-    public static function fromState(int $userID, string $userType, array $transactions = []): self
-    {
-        return new self(
-            $userID,
-            $userType,
-            $transactions,
-        );
-    }
-
     public function getUserID(): int
     {
         return $this->userID;
