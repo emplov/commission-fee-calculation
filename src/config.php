@@ -35,7 +35,7 @@ return [
             'deposit' => '0.03',
             'withdraw' => [
                 'percent' => '0.3',
-                'week_free_fee_amount' => '1000',
+                'weekly_free_fee_amount' => '1000',
             ],
         ],
     ],

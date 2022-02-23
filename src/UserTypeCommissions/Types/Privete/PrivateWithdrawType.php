@@ -94,16 +94,16 @@ class PrivateWithdrawType implements TypeAbstract
     {
         $convertedAmount = $this->convert->convert($amount, $currency);
 
-        $weekFreeFeeAmount = $this->config->get('commissions.private.withdraw.week_free_fee_amount');
+        $weeklyFreeFeeAmount = $this->config->get('commissions.private.withdraw.weekly_free_fee_amount');
 
-        if ($usedWeekFreeFeeAmount >= $weekFreeFeeAmount) {
+        if ($usedWeekFreeFeeAmount >= $weeklyFreeFeeAmount) {
             return [
                 $amount,
                 '0',
             ];
         }
 
-        $freeFee = $this->math->sub($weekFreeFeeAmount, $usedWeekFreeFeeAmount);
+        $freeFee = $this->math->sub($weeklyFreeFeeAmount, $usedWeekFreeFeeAmount);
 
         if ((float) $convertedAmount <= (float) $freeFee) {
             $amount = '0';
