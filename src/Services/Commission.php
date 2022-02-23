@@ -6,6 +6,7 @@ namespace CommissionFeeCalculation\Services;
 
 use CommissionFeeCalculation\DTO\CommissionDTO;
 use CommissionFeeCalculation\Entities\User;
+use CommissionFeeCalculation\Exceptions\ScriptException;
 use CommissionFeeCalculation\Repositories\UserRepository;
 use CommissionFeeCalculation\UserTypeCommissions\TypesContext;
 
@@ -40,7 +41,7 @@ class Commission
         }
 
         // Get decimals count
-        $decimalsCount = $this->config->get('currency_decimal_part.'.$operationCurrency);
+        $decimalsCount = $this->config->get('currency_decimal_part.'.$operationCurrency, 2);
 
         $dto = new CommissionDTO(
             userKey: $user->getUserID(),
