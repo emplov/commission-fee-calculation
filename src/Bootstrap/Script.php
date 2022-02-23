@@ -7,8 +7,8 @@ namespace CommissionFeeCalculation\Bootstrap;
 use CommissionFeeCalculation\Parsers\ParserContext;
 use CommissionFeeCalculation\Services\Commission;
 use CommissionFeeCalculation\Services\Config;
-use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Dispatcher;
+use CommissionFeeCalculation\Services\File;
 use Exception;
 
 /**
@@ -18,19 +18,16 @@ final class Script
 {
     private string $extension;
 
-    private Config $config;
-
-    private Commission $commission;
-
     public function __construct(
+        private File $fileService,
+        private Config $config,
+        private Commission $commission,
         private string $filepath,
         private string $separator = ',',
         private string $enclosure = '"',
         private string $escape = '\\',
     ) {
         $this->extension = $this->getExtension($filepath);
-        $this->config = Container::getInstance()->get(Config::class);
-        $this->commission = Container::getInstance()->get(Commission::class);
     }
 
     /**
@@ -83,6 +80,7 @@ final class Script
             if ($extension === $accessibleExtension) {
                 $context->setStrategy(
                     new $accessibleType(
+                        $this->fileService,
                         $this->filepath,
                         $this->separator,
                         $this->enclosure,
