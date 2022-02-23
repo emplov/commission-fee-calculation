@@ -77,7 +77,9 @@ class Container implements ContainerInterface
         $parameters = [];
 
         foreach ($constructor->getParameters() as $parameter) {
-            $parameters[$parameter->getName()] = $this->get($parameter->getType()->getName());
+            if (!$parameter->isOptional()) {
+                $parameters[$parameter->getName()] = $this->get($parameter->getType()->getName());
+            }
         }
 
         return new $class(...$parameters);
