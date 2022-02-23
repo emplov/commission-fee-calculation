@@ -42,8 +42,9 @@ if ($fileService->fileSize($filepath) > $container->get(Config::class)->get('max
 
 // Create script object
 $script = new Script(
-    config: Container::getInstance()->get(Config::class),
-    commission: Container::getInstance()->get(Commission::class),
+    fileService: $fileService,
+    config: $container->get(Config::class),
+    commission: $container->get(Commission::class),
     filepath: $filepath,
 );
 
