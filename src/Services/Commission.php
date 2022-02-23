@@ -34,7 +34,7 @@ class Commission
 
         // Create user if not exists
         if (is_null($user)) {
-            $this->userRepository->save(User::fromState($userID, $userType));
+            $this->userRepository->save(new User($userID, $userType));
 
             $user = $this->userRepository->find($userID);
         }

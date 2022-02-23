@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use CommissionFeeCalculation\Bootstrap\Script;
 use CommissionFeeCalculation\Exceptions\ScriptException;
+use CommissionFeeCalculation\Services\Commission;
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\File;
@@ -27,18 +28,22 @@ if (empty($filepath)) {
 $container = Container::getInstance();
 $container->addDefinitions(include 'definitions.php');
 
+$fileService = $container->get(File::class);
+
 // Check file for existence
-if (!File::fileExists($filepath)) {
+if (!$fileService->fileExists($filepath)) {
     throw new ScriptException(ScriptException::ERROR_FILE_NOT_FOUNT);
 }
 
 // Check file size
-if (File::fileSize($filepath) > $container->get(Config::class)->get('max_file_size')) {
+if ($fileService->fileSize($filepath) > $container->get(Config::class)->get('max_file_size')) {
     throw new ScriptException(ScriptException::ERROR_FILE_TOO_BIG);
 }
 
 // Create script object
 $script = new Script(
+    config: Container::getInstance()->get(Config::class),
+    commission: Container::getInstance()->get(Commission::class),
     filepath: $filepath,
 );
 
