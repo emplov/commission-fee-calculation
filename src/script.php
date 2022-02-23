@@ -9,11 +9,8 @@ use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\File;
 
-// path till src folder
-$scriptPath = __DIR__;
-
 // Connecting composer's autoloader
-require_once $scriptPath.'/../vendor/autoload.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
 // Taking filename from command line
 $filepath = $argv[1] ?? null;
