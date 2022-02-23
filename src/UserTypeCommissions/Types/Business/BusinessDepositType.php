@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace CommissionFeeCalculation\UserTypeCommissions\Types\Business;
 
 use CommissionFeeCalculation\Services\Config;
-use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Math;
 use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
 
@@ -15,10 +14,10 @@ class BusinessDepositType extends TypeAbstract
 
     private Config $config;
 
-    public function __construct()
+    public function __construct(Math $math, Config $config)
     {
-        $this->math = Container::getInstance()->get(Math::class);
-        $this->config = Container::getInstance()->get(Config::class);
+        $this->math = $math;
+        $this->config = $config;
     }
 
     /**

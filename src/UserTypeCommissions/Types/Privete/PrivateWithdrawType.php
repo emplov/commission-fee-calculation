@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use CommissionFeeCalculation\Entities\UsedCommission;
 use CommissionFeeCalculation\Repositories\UserRepository;
 use CommissionFeeCalculation\Services\Config;
-use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Converter\Convert;
 use CommissionFeeCalculation\Services\Math;
 use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
@@ -23,12 +22,12 @@ class PrivateWithdrawType extends TypeAbstract
 
     private UserRepository $userRepository;
 
-    public function __construct()
+    public function __construct(UserRepository $userRepository, Config $config, Convert $convert, Math $math)
     {
-        $this->userRepository = Container::getInstance()->get(UserRepository::class);
-        $this->config = Container::getInstance()->get(Config::class);
-        $this->convert = Container::getInstance()->get(Convert::class);
-        $this->math = Container::getInstance()->get(Math::class);
+        $this->userRepository = $userRepository;
+        $this->config = $config;
+        $this->convert = $convert;
+        $this->math = $math;
     }
 
     /**
