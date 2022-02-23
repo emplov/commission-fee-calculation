@@ -75,7 +75,7 @@ class Commission
             if (
                 mb_strtolower($userType.'_'.$type) === mb_strtolower($userType.'_'.$commissionType)
             ) {
-                $context->setStrategy(new $object());
+                $context->setStrategy(new $object(), $this->userRepository);
 
                 break;
             }
