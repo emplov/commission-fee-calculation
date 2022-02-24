@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CommissionFeeCalculation\UserTypeCommissions\Types\Privete;
+namespace CommissionFeeCalculation\UserTypeCommissions\Types\Private;
 
 use Carbon\Carbon;
 use CommissionFeeCalculation\Entities\UsedCommission;

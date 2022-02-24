@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace CommissionFeeCalculation\UserTypeCommissions\Types\Privete;
+namespace CommissionFeeCalculation\UserTypeCommissions\Types\Private;
 
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Math;
