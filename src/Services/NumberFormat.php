@@ -11,6 +11,13 @@ class NumberFormat
     ) {
     }
 
+    /**
+     * Round number
+     *
+     * @param string $amount
+     * @param int $decimalsCount
+     * @return string
+     */
     public function roundNumber(string $amount, int $decimalsCount = 2): string
     {
         if ($decimalsCount === 0) {
@@ -25,6 +32,13 @@ class NumberFormat
         return $amount;
     }
 
+    /**
+     * Cast to commission output style
+     *
+     * @param string $amount
+     * @param int $decimalsCount
+     * @return string
+     */
     public function castToStandartFormat(string $amount, int $decimalsCount = 2): string
     {
         return number_format(
