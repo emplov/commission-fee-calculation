@@ -12,11 +12,7 @@ class NumberFormat
     }
 
     /**
-     * Round number
-     *
-     * @param string $amount
-     * @param int $decimalsCount
-     * @return string
+     * Round number.
      */
     public function roundNumber(string $amount, int $decimalsCount = 2): string
     {
@@ -33,11 +29,7 @@ class NumberFormat
     }
 
     /**
-     * Cast to commission output style
-     *
-     * @param string $amount
-     * @param int $decimalsCount
-     * @return string
+     * Cast to commission output style.
      */
     public function castToStandartFormat(string $amount, int $decimalsCount = 2): string
     {
