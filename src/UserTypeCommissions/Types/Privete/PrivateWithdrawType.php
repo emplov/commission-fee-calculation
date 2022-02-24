@@ -6,6 +6,7 @@ namespace CommissionFeeCalculation\UserTypeCommissions\Types\Privete;
 
 use Carbon\Carbon;
 use CommissionFeeCalculation\Entities\UsedCommission;
+use CommissionFeeCalculation\Entities\User;
 use CommissionFeeCalculation\Repositories\UserRepository;
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Converter\Converter;
@@ -49,26 +50,11 @@ class PrivateWithdrawType implements TypeAbstract
 
         $sunday = $withdrawalDate->endOfWeek();
 
-        $usedWeekFreeFeeAmount = '0';
+        $usedWeeklyFreeFeeAmount = $this->getUsedWeeklyFreeAmount($user, $monday, $sunday, $decimalsCount);
 
-        if ($user->hasTransactions(self::type())) {
-            /** @var UsedCommission $commission */
-            foreach ($user->getTransactionsByType(self::type()) as $commission) {
-                if (
-                    $commission->getWeekStartDate() === $monday->format('Y-m-d') &&
-                    $commission->getWeekEndDate() === $sunday->format('Y-m-d')
-                ) {
-                    $usedWeekFreeFeeAmount = $this->math->add(
-                        $usedWeekFreeFeeAmount,
-                        $commission->getFreeAmount(),
-                        $decimalsCount,
-                    );
-                }
-            }
-        }
+        [$amountToCharge, $freeFee] = $this->removeFreeAmountFee($amount, $currency, $usedWeeklyFreeFeeAmount);
 
-        [$amountToCharge, $freeFee] = $this->removeFreeAmountFee($amount, $currency, $usedWeekFreeFeeAmount);
-
+        // Add used weekly free fee
         $user->addTransaction(self::type(), new UsedCommission(
             $date,
             $monday->format('Y-m-d'),
@@ -76,8 +62,11 @@ class PrivateWithdrawType implements TypeAbstract
             $this->numberFormat->roundNumber((string) $freeFee, $decimalsCount),
         ));
 
+        // Save user
         $this->userRepository->save($user);
 
+        // Formula
+        // amountToCharge * {commissions.private.withdraw.percent} / 100
         return $this->numberFormat->castToStandartFormat(
             $this->math->divide(
                 $this->math->multiply(
@@ -90,38 +79,77 @@ class PrivateWithdrawType implements TypeAbstract
         );
     }
 
-    private function removeFreeAmountFee(string $amount, string $currency, string $usedWeekFreeFeeAmount): array
+    private function removeFreeAmountFee(string $amount, string $currency, string $usedWeeklyFreeFeeAmount): array
     {
-        $convertedAmount = $this->convert->convert($amount, $currency);
-
+        // Get weekly free fee amount
         $weeklyFreeFeeAmount = $this->config->get('commissions.private.withdraw.weekly_free_fee_amount');
 
-        if ($usedWeekFreeFeeAmount >= $weeklyFreeFeeAmount) {
+        // Amount that is going to be charged
+        $amountToCharge = $amount;
+
+        // If used weekly free amount was exceeded
+        // then charge commission from whole amount
+        if ($usedWeeklyFreeFeeAmount >= $weeklyFreeFeeAmount) {
             return [
-                $amount,
+                $amountToCharge,
                 '0',
             ];
         }
 
-        $freeFee = $this->math->sub($weeklyFreeFeeAmount, $usedWeekFreeFeeAmount);
+        // If not exceeded
 
-        if ((float) $convertedAmount <= (float) $freeFee) {
-            $amount = '0';
-            $feeToChargeInEur = $convertedAmount;
+        // convert amount to base currency
+        $convertedAmount = $this->convert->convert($amountToCharge, $currency);
+
+        // Get not used weekly free fee
+        $notUsedWeeklyFreeFee = $this->math->sub($weeklyFreeFeeAmount, $usedWeeklyFreeFeeAmount);
+
+        // If amount less or equal to not used weekly free fee
+        if ((float) $convertedAmount <= (float) $notUsedWeeklyFreeFee) {
+            // Then not charge commission from amount
+            $amountToCharge = '0';
+            $feeToCharge = $convertedAmount;
         } else {
-            $amount = $this->math->sub(
-                $amount,
+            // if amount more than not used weekly free fee
+            // then minus not used weekly free fee from amount
+            $amountToCharge = $this->math->sub(
+                $amountToCharge,
                 $this->math->multiply(
-                    $freeFee,
+                    $notUsedWeeklyFreeFee,
                     $this->math->convertFloat($this->convert->getRate($currency)),
                 ),
             );
-            $feeToChargeInEur = $freeFee;
+            $feeToCharge = $notUsedWeeklyFreeFee;
         }
 
+        // Return amount to charge which is used in commission calculating
+        // And used fee from weekly free fee, to save it
         return [
-            $amount,
-            $feeToChargeInEur,
+            $amountToCharge,
+            $feeToCharge,
         ];
+    }
+
+    private function getUsedWeeklyFreeAmount(User $user, Carbon $monday, Carbon $sunday, int $decimalsCount): string
+    {
+        $usedWeeklyFreeFeeAmount = '0';
+
+        if ($user->hasTransactions(self::type())) {
+            /** @var UsedCommission $commission */
+            foreach ($user->getTransactionsByType(self::type()) as $commission) {
+                if (
+                    $commission->getWeekStartDate() === $monday->format('Y-m-d') &&
+                    $commission->getWeekEndDate() === $sunday->format('Y-m-d')
+                ) {
+                    $usedWeeklyFreeFeeAmount = $this->math->add(
+                        $usedWeeklyFreeFeeAmount,
+                        $commission->getFreeAmount(),
+                        $decimalsCount,
+                    );
+                }
+            }
+        }
+
+        return $usedWeeklyFreeFeeAmount;
     }
 }
