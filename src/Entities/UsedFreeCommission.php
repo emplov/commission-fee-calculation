@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\Entities;
 
-class UsedCommission
+class UsedFreeCommission
 {
     public function __construct(
+        private int $userId,
+        private string $type,
         private string $date,
         private string $weekStartDate,
         private string $weekEndDate,
@@ -32,5 +34,15 @@ class UsedCommission
     public function getWeekEndDate(): string
     {
         return $this->weekEndDate;
+    }
+
+    public function getUserId(): int
+    {
+        return $this->userId;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
     }
 }
