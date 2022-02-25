@@ -1,0 +1,28 @@
+max_file_size: 100
+accessible_extensions:
+    csv: CommissionFeeCalculation\Parsers\Items\CsvParser
+user_types:
+    private: {
+        deposit: CommissionFeeCalculation\UserTypeCommissions\Types\Private\PrivateDepositType,
+        withdraw: CommissionFeeCalculation\UserTypeCommissions\Types\Private\PrivateWithdrawType
+    }
+    business: {
+        deposit: CommissionFeeCalculation\UserTypeCommissions\Types\Business\BusinessDepositType,
+        withdraw: CommissionFeeCalculation\UserTypeCommissions\Types\Business\BusinessWithdrawType
+    }
+commissions:
+    business: {
+        deposit: '0.03',
+        withdraw: '0.5'
+    }
+    private: {
+        deposit: '0.03',
+        withdraw: {
+            percent: '0.3',
+            weekly_free_fee_amount: '1000'
+        }
+    }
+currency_decimal_part:
+    USD: 2
+    EUR: 2
+    JPY: 0
