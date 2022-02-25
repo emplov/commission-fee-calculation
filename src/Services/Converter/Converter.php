@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\Services\Converter;
 
-interface Convert
+interface Converter
 {
     public function convert(string $amount, string $currency);
 

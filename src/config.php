@@ -5,8 +5,8 @@ declare(strict_types=1);
 use CommissionFeeCalculation\Parsers\Items\CsvParser;
 use CommissionFeeCalculation\UserTypeCommissions\Types\Business\BusinessDepositType;
 use CommissionFeeCalculation\UserTypeCommissions\Types\Business\BusinessWithdrawType;
-use CommissionFeeCalculation\UserTypeCommissions\Types\Privete\PrivateDepositType;
-use CommissionFeeCalculation\UserTypeCommissions\Types\Privete\PrivateWithdrawType;
+use CommissionFeeCalculation\UserTypeCommissions\Types\Private\PrivateDepositType;
+use CommissionFeeCalculation\UserTypeCommissions\Types\Private\PrivateWithdrawType;
 
 return [
     'max_file_size' => 100, // in MB
@@ -35,7 +35,7 @@ return [
             'deposit' => '0.03',
             'withdraw' => [
                 'percent' => '0.3',
-                'week_free_fee_amount' => '1000',
+                'weekly_free_fee_amount' => '1000',
             ],
         ],
     ],

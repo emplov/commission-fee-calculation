@@ -34,13 +34,13 @@ class Commission
 
         // Create user if not exists
         if (is_null($user)) {
-            $this->userRepository->save(User::fromState($userID, $userType));
+            $this->userRepository->save(new User($userID, $userType));
 
             $user = $this->userRepository->find($userID);
         }
 
         // Get decimals count
-        $decimalsCount = $this->config->get('currency_decimal_part.'.$operationCurrency);
+        $decimalsCount = $this->config->get('currency_decimal_part.'.$operationCurrency, 2);
 
         $dto = new CommissionDTO(
             userKey: $user->getUserID(),
@@ -75,7 +75,7 @@ class Commission
             if (
                 mb_strtolower($userType.'_'.$type) === mb_strtolower($userType.'_'.$commissionType)
             ) {
-                $context->setStrategy(new $object());
+                $context->setStrategy(Container::getInstance()->make($object), $this->userRepository);
 
                 break;
             }

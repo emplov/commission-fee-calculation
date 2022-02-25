@@ -5,11 +5,13 @@ declare(strict_types=1);
 include __DIR__ . '/vendor/autoload.php';
 
 $finder = PhpCsFixer\Finder::create()
-    ->in(['src']);
+    ->in([
+        'src',
+        'tests',
+    ])
+;
 
-$config = new PhpCsFixer\Config();
-
-return $config
+return (new PhpCsFixer\Config())
     ->setRules([
         '@Symfony' => true,
         'no_alternative_syntax' => true,
@@ -20,4 +22,5 @@ return $config
     ])
     ->setFinder($finder)
     ->setUsingCache(false)
-    ->setRiskyAllowed(true);
+    ->setRiskyAllowed(true)
+;

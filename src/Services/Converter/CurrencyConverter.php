@@ -8,7 +8,7 @@ use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Math;
 use GuzzleHttp\Client;
 
-class CurrencyConverter implements Convert
+class CurrencyConverter implements Converter
 {
     public array $currenciesRate = [];
 

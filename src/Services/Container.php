@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\Services;
 
+use Closure;
 use Exception;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use ReflectionClass;
+use ReflectionException;
 
 class Container implements ContainerInterface
 {
@@ -36,7 +41,7 @@ class Container implements ContainerInterface
 
         $value = $this->definitions[$id];
 
-        if ($value instanceof \Closure) {
+        if ($value instanceof Closure) {
             $value = $value($this);
         }
 
@@ -56,5 +61,27 @@ class Container implements ContainerInterface
             $definitions,
             [ContainerInterface::class => $this]
         );
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws ReflectionException
+     * @throws NotFoundExceptionInterface
+     */
+    public function make(string $class)
+    {
+        $reflectionClass = new ReflectionClass($class);
+
+        $constructor = $reflectionClass->getConstructor();
+
+        $parameters = [];
+
+        foreach ($constructor->getParameters() as $parameter) {
+            if (!$parameter->isOptional()) {
+                $parameters[$parameter->getName()] = $this->get($parameter->getType()->getName());
+            }
+        }
+
+        return new $class(...$parameters);
     }
 }

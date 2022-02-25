@@ -9,7 +9,7 @@ class File
     /**
      * Check for file existence.
      */
-    public static function fileExists(string $path): bool
+    public function fileExists(string $path): bool
     {
         return file_exists($path);
     }
@@ -17,17 +17,17 @@ class File
     /**
      * @return false|resource
      */
-    public static function openFile(string $path)
+    public function openFile(string $path)
     {
         return fopen($path, 'rb');
     }
 
-    public static function closeFile($openedFile): bool
+    public function closeFile($openedFile): bool
     {
         return fclose($openedFile);
     }
 
-    public static function fileSize(string $filepath): float
+    public function fileSize(string $filepath): float
     {
         $filesize = filesize($filepath);
 

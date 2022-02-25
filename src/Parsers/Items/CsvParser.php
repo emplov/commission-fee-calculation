@@ -14,6 +14,7 @@ class CsvParser implements Parser
      * {@inheritDoc}
      */
     public function __construct(
+        private File $fileService,
         private string $filepath,
         private string $separator,
         private ?string $enclosure = null,
@@ -26,7 +27,7 @@ class CsvParser implements Parser
      */
     public function parse(): Generator
     {
-        $fileResource = File::openFile($this->filepath);
+        $fileResource = $this->fileService->openFile($this->filepath);
 
         while (
             (
@@ -42,6 +43,6 @@ class CsvParser implements Parser
             yield $userTransaction;
         }
 
-        File::closeFile($fileResource);
+        $this->fileService->closeFile($fileResource);
     }
 }

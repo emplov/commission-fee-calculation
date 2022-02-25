@@ -5,20 +5,17 @@ declare(strict_types=1);
 namespace CommissionFeeCalculation\UserTypeCommissions\Types\Business;
 
 use CommissionFeeCalculation\Services\Config;
-use CommissionFeeCalculation\Services\Container;
 use CommissionFeeCalculation\Services\Math;
+use CommissionFeeCalculation\Services\NumberFormat;
 use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
 
-class BusinessWithdrawType extends TypeAbstract
+class BusinessWithdrawType implements TypeAbstract
 {
-    private Math $math;
-
-    private Config $config;
-
-    public function __construct()
-    {
-        $this->config = Container::getInstance()->get(Config::class);
-        $this->math = Container::getInstance()->get(Math::class);
+    public function __construct(
+        private Config $config,
+        private Math $math,
+        private NumberFormat $numberFormat,
+    ) {
     }
 
     /**
@@ -34,7 +31,7 @@ class BusinessWithdrawType extends TypeAbstract
      */
     public function handle(int $userKey, string $amount, string $currency, string $date, int $decimalsCount): string
     {
-        return $this->castToStandartFormat(
+        return $this->numberFormat->castToStandartFormat(
             $this->math->divide(
                 $this->math->multiply(
                     $amount,
