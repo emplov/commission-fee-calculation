@@ -22,13 +22,13 @@ class UserRepository
             return null;
         }
 
-        return new User($user['user_id'], $user['user_type'], $user['transactions']);
+        return new User($user['id'], $user['user_type'], $user['transactions']);
     }
 
-    public function save(User $user): void
+    public function save(User $user): mixed
     {
-        $this->persistence->persist([
-            'user_id' => $user->getUserID(),
+        return $this->persistence->persist([
+            'id' => $user->getUserID(),
             'user_type' => $user->getUserType(),
             'transactions' => $user->getTransactions(),
         ]);
