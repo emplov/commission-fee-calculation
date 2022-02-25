@@ -13,6 +13,7 @@ use CommissionFeeCalculation\Services\File;
 use CommissionFeeCalculation\Services\Math;
 use CommissionFeeCalculation\Services\NumberFormat;
 use Psr\Container\ContainerInterface;
+use Symfony\Component\Yaml\Yaml;
 
 return [
     Math::class => new Math(),
@@ -33,7 +34,8 @@ return [
 
     Config::class => static function (ContainerInterface $container) {
         $config = new Config();
-        $config->setConfig(require 'config.php');
+
+        $config->setConfig(Yaml::parseFile(__DIR__.'/config.yml'));
 
         return $config;
     },

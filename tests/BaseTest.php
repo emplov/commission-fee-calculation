@@ -17,6 +17,7 @@ use CommissionFeeCalculation\Services\Math;
 use CommissionFeeCalculation\Services\NumberFormat;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use Symfony\Component\Yaml\Yaml;
 
 abstract class BaseTest extends TestCase
 {
@@ -45,7 +46,8 @@ abstract class BaseTest extends TestCase
 
             Config::class => static function (ContainerInterface $container) {
                 $config = new Config();
-                $config->setConfig(require __DIR__.'./../src/config.php');
+
+                $config->setConfig(Yaml::parseFile(__DIR__.'/../src/config.yml'));
 
                 return $config;
             },
