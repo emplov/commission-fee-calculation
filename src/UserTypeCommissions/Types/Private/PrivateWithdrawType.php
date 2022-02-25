@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace CommissionFeeCalculation\UserTypeCommissions\Types\Private;
 
 use Carbon\Carbon;
-use CommissionFeeCalculation\Entities\UsedCommission;
+use CommissionFeeCalculation\Entities\UsedFreeCommission;
 use CommissionFeeCalculation\Entities\User;
+use CommissionFeeCalculation\Exceptions\ScriptException;
+use CommissionFeeCalculation\Repositories\UsedCommissionRepository;
 use CommissionFeeCalculation\Repositories\UserRepository;
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Converter\Converter;
@@ -18,6 +20,7 @@ class PrivateWithdrawType implements TypeAbstract
 {
     public function __construct(
         private UserRepository $userRepository,
+        private UsedCommissionRepository $usedCommissionRepository,
         private Config $config,
         private Converter $convert,
         private Math $math,
@@ -38,29 +41,42 @@ class PrivateWithdrawType implements TypeAbstract
      */
     public function handle(int $userKey, string $amount, string $currency, string $date, int $decimalsCount): string
     {
+        // Get user
         $user = $this->userRepository->find($userKey);
 
+        // Check is user not null
         if (!$user) {
             throw new \Exception("User [$userKey] not found.");
         }
 
+        // Make Carbon object of withdrawal date
         $withdrawalDate = Carbon::make($date);
 
+        // Get withdrawal date week's monday date
         $monday = $withdrawalDate->startOfWeek();
 
+        // Get withdrawal date week's sunday date
         $sunday = $withdrawalDate->endOfWeek();
 
+        // Get this week used free fee amount
         $usedWeeklyFreeFeeAmount = $this->getUsedWeeklyFreeAmount($user, $monday, $sunday, $decimalsCount);
 
+        // Remove this week used free fee from amount
         [$amountToCharge, $freeFee] = $this->removeFreeAmountFee($amount, $currency, $usedWeeklyFreeFeeAmount);
 
-        // Add used weekly free fee
-        $user->addTransaction(self::type(), new UsedCommission(
+        // Save used free fee
+        $usedCommission = new UsedFreeCommission(
+            $user->getUserID(),
+            self::type(),
             $date,
             $monday->format('Y-m-d'),
             $sunday->format('Y-m-d'),
             $this->numberFormat->roundNumber((string) $freeFee, $decimalsCount),
-        ));
+        );
+        $usedCommissionId = $this->usedCommissionRepository->save($usedCommission);
+
+        // Add to users used_commissions_list
+        $user->addUsedFreeFeeCommission(self::type(), $usedCommissionId);
 
         // Save user
         $this->userRepository->save($user);
@@ -134,16 +150,22 @@ class PrivateWithdrawType implements TypeAbstract
     {
         $usedWeeklyFreeFeeAmount = '0';
 
-        if ($user->hasTransactions(self::type())) {
-            /** @var UsedCommission $commission */
-            foreach ($user->getTransactionsByType(self::type()) as $commission) {
+        if ($user->hasUsedFreeFeeCommissions(self::type())) {
+            /* @var UsedFreeCommission $usedCommission */
+            foreach ($user->getUsedCommissionsByType(self::type()) as $usedCommissionId) {
+                $usedCommission = $this->usedCommissionRepository->find($usedCommissionId);
+
+                if (!$usedCommission) {
+                    throw new ScriptException('Commission with '.$usedCommissionId.' not exists.');
+                }
+
                 if (
-                    $commission->getWeekStartDate() === $monday->format('Y-m-d') &&
-                    $commission->getWeekEndDate() === $sunday->format('Y-m-d')
+                    $usedCommission->getWeekStartDate() === $monday->format('Y-m-d')
+                    && $usedCommission->getWeekEndDate() === $sunday->format('Y-m-d')
                 ) {
                     $usedWeeklyFreeFeeAmount = $this->math->add(
                         $usedWeeklyFreeFeeAmount,
-                        $commission->getFreeAmount(),
+                        $usedCommission->getFreeAmount(),
                         $decimalsCount,
                     );
                 }
