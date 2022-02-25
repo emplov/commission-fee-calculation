@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace CommissionFeeCalculation\Tests;
 
 use CommissionFeeCalculation\Repositories\Persistence\InMemoryPersistence;
-use CommissionFeeCalculation\Repositories\Persistence\Persistence;
+use CommissionFeeCalculation\Repositories\UsedCommissionRepository;
 use CommissionFeeCalculation\Repositories\UserRepository;
 use CommissionFeeCalculation\Services\Commission;
 use CommissionFeeCalculation\Services\Config;
@@ -35,12 +35,12 @@ abstract class BaseTest extends TestCase
                 return new NumberFormat($container->get(Math::class));
             },
 
-            Persistence::class => static function (ContainerInterface $container) {
-                return new InMemoryPersistence();
+            UserRepository::class => static function (ContainerInterface $container) {
+                return new UserRepository(new InMemoryPersistence());
             },
 
-            UserRepository::class => static function (ContainerInterface $container) {
-                return new UserRepository($container->get(Persistence::class));
+            UsedCommissionRepository::class => static function (ContainerInterface $container) {
+                return new UsedCommissionRepository(new InMemoryPersistence());
             },
 
             Config::class => static function (ContainerInterface $container) {
