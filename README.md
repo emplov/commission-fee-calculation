@@ -3,13 +3,13 @@
 ## Documentation
 
 Run script wherever you want
+filepath is absolute
 ````
-php ./src/script.php input.csv
+php src/script.php input.csv
 ````
 
 ### Available extensions support
 * csv
-* txt
 
 ### Example usage
 ```
@@ -28,7 +28,7 @@ php ./src/script.php input.csv
 2016-02-15,1,private,withdraw,300.00,EUR
 2016-02-19,5,private,withdraw,3000000,JPY
 
-➜  php ./src/script.php input.csv
+➜  php src/script.php input.csv
 0.60
 3.00
 0.00
