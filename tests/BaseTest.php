@@ -79,7 +79,7 @@ abstract class BaseTest extends TestCase
             },
 
             BusinessWithdrawType::class => static function (ContainerInterface $container) {
-                return new BusinessDepositType(
+                return new BusinessWithdrawType(
                     $container->get(Math::class),
                     $container->get(Config::class),
                     $container->get(NumberFormat::class),

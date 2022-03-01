@@ -12,8 +12,8 @@ use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
 class BusinessWithdrawType implements TypeAbstract
 {
     public function __construct(
-        private Config $config,
         private Math $math,
+        private Config $config,
         private NumberFormat $numberFormat,
     ) {
     }
