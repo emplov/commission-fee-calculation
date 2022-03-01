@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace CommissionFeeCalculation\UserTypeCommissions\Types\Private;
 
 use Carbon\Carbon;
-use CommissionFeeCalculation\Entities\UsedFreeCommission;
+use CommissionFeeCalculation\Entities\Transaction;
 use CommissionFeeCalculation\Entities\User;
 use CommissionFeeCalculation\Exceptions\ScriptException;
-use CommissionFeeCalculation\Repositories\UsedCommissionRepository;
+use CommissionFeeCalculation\Repositories\TransactionRepository;
 use CommissionFeeCalculation\Repositories\UserRepository;
 use CommissionFeeCalculation\Services\Config;
 use CommissionFeeCalculation\Services\Converter\Converter;
@@ -20,7 +20,7 @@ class PrivateWithdrawType implements TypeAbstract
 {
     public function __construct(
         private UserRepository $userRepository,
-        private UsedCommissionRepository $usedCommissionRepository,
+        private TransactionRepository $usedCommissionRepository,
         private Config $config,
         private Converter $convert,
         private Math $math,
@@ -58,8 +58,10 @@ class PrivateWithdrawType implements TypeAbstract
         // Get this week used free fee amount
         $usedWeeklyFreeFeeAmount = $this->getUsedWeeklyFreeAmount($user, $monday, $sunday, $decimalsCount);
 
+        // Get acceptable weekly free fee amount
         $weeklyFreeFeeAmount = $this->config->get('commissions.private.withdraw.weekly_free_fee_amount');
 
+        // Converted amount to base currency
         $convertedAmount = $this->convert->convert($amount, $currency);
 
         // Remove this week used free fee from amount
@@ -68,20 +70,21 @@ class PrivateWithdrawType implements TypeAbstract
         // Get used free fee
         $usedFreeFee = $this->getUsedFreeFee($usedWeeklyFreeFeeAmount, $weeklyFreeFeeAmount, $convertedAmount);
 
-        // Save used free fee
-        $usedCommission = new UsedFreeCommission(
+        // Save transaction
+        $usedCommission = new Transaction(
             $user->getUserID(),
             $this->type(),
             $date,
             $monday->format('Y-m-d'),
             $sunday->format('Y-m-d'),
             $this->numberFormat->roundNumber($usedFreeFee, $decimalsCount),
+            $amount,
         );
 
         $usedCommissionId = $this->usedCommissionRepository->save($usedCommission);
 
         // Add to users used_commissions_list
-        $user->addUsedFreeFeeCommission($this->type(), $usedCommissionId);
+        $user->addTransaction($this->type(), $usedCommissionId);
 
         // Save user
         $this->userRepository->save($user);
@@ -158,9 +161,9 @@ class PrivateWithdrawType implements TypeAbstract
     {
         $usedWeeklyFreeFeeAmount = '0';
 
-        if ($user->hasUsedFreeFeeCommissions($this->type())) {
-            /* @var UsedFreeCommission $usedCommission */
-            foreach ($user->getUsedCommissionsByType($this->type()) as $usedCommissionId) {
+        if ($user->hasTransactions($this->type())) {
+            /* @var Transaction $usedCommission */
+            foreach ($user->getTransactionsByType($this->type()) as $usedCommissionId) {
                 $usedCommission = $this->usedCommissionRepository->find($usedCommissionId);
 
                 if (!$usedCommission) {
@@ -170,6 +173,7 @@ class PrivateWithdrawType implements TypeAbstract
                 if (
                     $usedCommission->getWeekStartDate() === $monday->format('Y-m-d')
                     && $usedCommission->getWeekEndDate() === $sunday->format('Y-m-d')
+                    && $usedCommission->getType() === $this->type()
                 ) {
                     $usedWeeklyFreeFeeAmount = $this->math->add(
                         $usedWeeklyFreeFeeAmount,

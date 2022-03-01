@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace CommissionFeeCalculation\Tests;
 
 use CommissionFeeCalculation\Repositories\Persistence\InMemoryPersistence;
-use CommissionFeeCalculation\Repositories\UsedCommissionRepository;
+use CommissionFeeCalculation\Repositories\TransactionRepository;
 use CommissionFeeCalculation\Repositories\UserRepository;
 use CommissionFeeCalculation\Services\Commission;
 use CommissionFeeCalculation\Services\Config;
@@ -44,8 +44,8 @@ abstract class BaseTest extends TestCase
                 return new UserRepository(new InMemoryPersistence());
             },
 
-            UsedCommissionRepository::class => static function (ContainerInterface $container) {
-                return new UsedCommissionRepository(new InMemoryPersistence());
+            TransactionRepository::class => static function (ContainerInterface $container) {
+                return new TransactionRepository(new InMemoryPersistence());
             },
 
             Config::class => static function (ContainerInterface $container) {
@@ -97,7 +97,7 @@ abstract class BaseTest extends TestCase
             PrivateWithdrawType::class => static function (ContainerInterface $container) {
                 return new PrivateWithdrawType(
                     $container->get(UserRepository::class),
-                    $container->get(UsedCommissionRepository::class),
+                    $container->get(TransactionRepository::class),
                     $container->get(Config::class),
                     $container->get(Converter::class),
                     $container->get(Math::class),
