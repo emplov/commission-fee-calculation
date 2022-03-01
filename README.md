@@ -2,7 +2,7 @@
 
 ## Documentation
 
-Run script wherever you want
+Run script wherever you want,
 filepath is absolute
 ````
 php src/script.php input.csv
