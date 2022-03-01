@@ -58,8 +58,15 @@ class PrivateWithdrawType implements TypeAbstract
         // Get this week used free fee amount
         $usedWeeklyFreeFeeAmount = $this->getUsedWeeklyFreeAmount($user, $monday, $sunday, $decimalsCount);
 
+        $weeklyFreeFeeAmount = $this->config->get('commissions.private.withdraw.weekly_free_fee_amount');
+
+        $convertedAmount = $this->convert->convert($amount, $currency);
+
         // Remove this week used free fee from amount
-        [$amountToCharge, $freeFee] = $this->removeFreeAmountFee($amount, $currency, $usedWeeklyFreeFeeAmount);
+        $amountToCharge = $this->removeFreeAmountFee($amount, $currency, $convertedAmount, $usedWeeklyFreeFeeAmount, $weeklyFreeFeeAmount);
+
+        // Get used free fee
+        $usedFreeFee = $this->getUsedFreeFee($usedWeeklyFreeFeeAmount, $weeklyFreeFeeAmount, $convertedAmount);
 
         // Save used free fee
         $usedCommission = new UsedFreeCommission(
@@ -68,7 +75,7 @@ class PrivateWithdrawType implements TypeAbstract
             $date,
             $monday->format('Y-m-d'),
             $sunday->format('Y-m-d'),
-            $this->numberFormat->roundNumber((string) $freeFee, $decimalsCount),
+            $this->numberFormat->roundNumber($usedFreeFee, $decimalsCount),
         );
 
         $usedCommissionId = $this->usedCommissionRepository->save($usedCommission);
@@ -93,27 +100,36 @@ class PrivateWithdrawType implements TypeAbstract
         );
     }
 
-    private function removeFreeAmountFee(string $amount, string $currency, string $usedWeeklyFreeFeeAmount): array
+    private function getUsedFreeFee(string $usedWeeklyFreeFeeAmount, string $weeklyFreeFeeAmount, string $convertedAmount): string
     {
-        // Get weekly free fee amount
-        $weeklyFreeFeeAmount = $this->config->get('commissions.private.withdraw.weekly_free_fee_amount');
+        if ($usedWeeklyFreeFeeAmount > $weeklyFreeFeeAmount) {
+            $freeFee = '0';
+        } elseif ($convertedAmount <= $this->math->sub($weeklyFreeFeeAmount, $usedWeeklyFreeFeeAmount)) {
+            $freeFee = $convertedAmount;
+        } else {
+            $freeFee = $this->math->sub($weeklyFreeFeeAmount, $usedWeeklyFreeFeeAmount);
+        }
 
+        return $freeFee;
+    }
+
+    private function removeFreeAmountFee(
+        string $amount,
+        string $currency,
+        string $convertedAmount,
+        string $usedWeeklyFreeFeeAmount,
+        string $weeklyFreeFeeAmount,
+    ): string {
         // Amount that is going to be charged
         $amountToCharge = $amount;
 
         // If used weekly free amount was exceeded
         // then charge commission from whole amount
         if ($usedWeeklyFreeFeeAmount >= $weeklyFreeFeeAmount) {
-            return [
-                $amountToCharge,
-                '0',
-            ];
+            return $amountToCharge;
         }
 
         // If not exceeded
-
-        // convert amount to base currency
-        $convertedAmount = $this->convert->convert($amountToCharge, $currency);
 
         // Get not used weekly free fee
         $notUsedWeeklyFreeFee = $this->math->sub($weeklyFreeFeeAmount, $usedWeeklyFreeFeeAmount);
@@ -122,7 +138,6 @@ class PrivateWithdrawType implements TypeAbstract
         if ((float) $convertedAmount <= (float) $notUsedWeeklyFreeFee) {
             // Then not charge commission from amount
             $amountToCharge = '0';
-            $feeToCharge = $convertedAmount;
         } else {
             // if amount more than not used weekly free fee
             // then minus not used weekly free fee from amount
@@ -133,15 +148,10 @@ class PrivateWithdrawType implements TypeAbstract
                     $this->math->convertFloat($this->convert->getRate($currency)),
                 ),
             );
-            $feeToCharge = $notUsedWeeklyFreeFee;
         }
 
         // Return amount to charge which is used in commission calculating
-        // And used fee from weekly free fee, to save it
-        return [
-            $amountToCharge,
-            $feeToCharge,
-        ];
+        return $amountToCharge;
     }
 
     private function getUsedWeeklyFreeAmount(User $user, Carbon $monday, Carbon $sunday, int $decimalsCount): string
