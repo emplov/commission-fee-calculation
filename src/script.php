@@ -23,7 +23,7 @@ if (empty($filepath)) {
 
 // Create container instance with definitions
 $container = Container::getInstance();
-$container->addDefinitions(require 'definitions.php');
+$container->init();
 
 $fileService = $container->get(File::class);
 

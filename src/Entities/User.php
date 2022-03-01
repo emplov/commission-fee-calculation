@@ -9,7 +9,7 @@ class User
     public function __construct(
         private int $userID,
         private string $userType,
-        private array $used_free_fee_commission = [],
+        private array $usedFreeFeeCommission = [],
     ) {
     }
 
@@ -20,7 +20,7 @@ class User
 
     public function getTransactions(): array
     {
-        return $this->used_free_fee_commission;
+        return $this->usedFreeFeeCommission;
     }
 
     public function getUserType(): string
@@ -30,16 +30,16 @@ class User
 
     public function addUsedFreeFeeCommission(string $transactionType, int $id): void
     {
-        $this->used_free_fee_commission[$transactionType][] = $id;
+        $this->usedFreeFeeCommission[$transactionType][] = $id;
     }
 
     public function hasUsedFreeFeeCommissions(string $transactionType): bool
     {
-        return isset($this->used_free_fee_commission[$transactionType]);
+        return isset($this->usedFreeFeeCommission[$transactionType]);
     }
 
     public function getUsedCommissionsByType(string $transactionType): array
     {
-        return $this->used_free_fee_commission[$transactionType];
+        return $this->usedFreeFeeCommission[$transactionType];
     }
 }
