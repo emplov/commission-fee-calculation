@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace CommissionFeeCalculation\Entities;
 
-class UsedFreeCommission
+class Transaction
 {
     public function __construct(
         private int $userId,
@@ -13,7 +13,13 @@ class UsedFreeCommission
         private string $weekStartDate,
         private string $weekEndDate,
         private string $freeAmount,
+        private string $amount,
     ) {
+    }
+
+    public function getAmount(): string
+    {
+        return $this->amount;
     }
 
     public function getFreeAmount(): string

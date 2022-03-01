@@ -6,7 +6,7 @@ namespace CommissionFeeCalculation\Services;
 
 use Closure;
 use CommissionFeeCalculation\Repositories\Persistence\InMemoryPersistence;
-use CommissionFeeCalculation\Repositories\UsedCommissionRepository;
+use CommissionFeeCalculation\Repositories\TransactionRepository;
 use CommissionFeeCalculation\Repositories\UserRepository;
 use CommissionFeeCalculation\Services\Converter\Converter;
 use CommissionFeeCalculation\Services\Converter\CurrencyConverter;
@@ -84,8 +84,8 @@ class Container implements ContainerInterface
                 return new UserRepository(new InMemoryPersistence());
             },
 
-            UsedCommissionRepository::class => static function (ContainerInterface $container) {
-                return new UsedCommissionRepository(new InMemoryPersistence());
+            TransactionRepository::class => static function (ContainerInterface $container) {
+                return new TransactionRepository(new InMemoryPersistence());
             },
 
             Config::class => static function (ContainerInterface $container) {
@@ -134,7 +134,7 @@ class Container implements ContainerInterface
             PrivateWithdrawType::class => static function (ContainerInterface $container) {
                 return new PrivateWithdrawType(
                     $container->get(UserRepository::class),
-                    $container->get(UsedCommissionRepository::class),
+                    $container->get(TransactionRepository::class),
                     $container->get(Config::class),
                     $container->get(Converter::class),
                     $container->get(Math::class),
