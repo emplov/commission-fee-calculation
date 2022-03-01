@@ -6,8 +6,9 @@ namespace CommissionFeeCalculation\Services;
 
 use CommissionFeeCalculation\DTO\CommissionDTO;
 use CommissionFeeCalculation\Entities\User;
+use CommissionFeeCalculation\Exceptions\ScriptException;
 use CommissionFeeCalculation\Repositories\UserRepository;
-use CommissionFeeCalculation\UserTypeCommissions\TypesContext;
+use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
 
 class Commission
 {
@@ -21,6 +22,9 @@ class Commission
         $this->config = $config;
     }
 
+    /**
+     * @throws ScriptException
+     */
     public function addTransaction(
         string $date,
         int $userID,
@@ -52,14 +56,13 @@ class Commission
         );
 
         // Withdrawal check statements
-        $context = $this->getTypeHandler(
+        $handler = $this->getTypeHandler(
             commissionType: $operationType,
             userType: $dto->userType,
         );
 
-        return $context->execute(
+        return $handler->handle(
             userKey: $dto->userKey,
-            commissionType: $operationType,
             amount: $dto->operationAmount,
             currency: $dto->operationCurrency,
             date: $dto->date,
@@ -67,20 +70,14 @@ class Commission
         );
     }
 
-    public function getTypeHandler(string $commissionType, string $userType): TypesContext
+    public function getTypeHandler(string $commissionType, string $userType): TypeAbstract
     {
-        $context = new TypesContext();
+        $handlerClass = $this->config->get('user_type_handlers.'.$userType.'.'.$commissionType);
 
-        foreach ($this->config->get('user_types')[$userType] as $type => $object) {
-            if (
-                mb_strtolower($userType.'_'.$type) === mb_strtolower($userType.'_'.$commissionType)
-            ) {
-                $context->setStrategy(Container::getInstance()->make($object), $this->userRepository);
-
-                break;
-            }
+        if (is_null($handlerClass)) {
+            throw new ScriptException(ScriptException::ERROR_USER_TYPE_HANDLER_NOT_FOUND);
         }
 
-        return $context;
+        return Container::getInstance()->get($handlerClass);
     }
 }

@@ -28,10 +28,7 @@ class PrivateWithdrawType implements TypeAbstract
     ) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public static function type(): string
+    public function type(): string
     {
         return 'private_withdraw';
     }
@@ -67,16 +64,17 @@ class PrivateWithdrawType implements TypeAbstract
         // Save used free fee
         $usedCommission = new UsedFreeCommission(
             $user->getUserID(),
-            self::type(),
+            $this->type(),
             $date,
             $monday->format('Y-m-d'),
             $sunday->format('Y-m-d'),
             $this->numberFormat->roundNumber((string) $freeFee, $decimalsCount),
         );
+
         $usedCommissionId = $this->usedCommissionRepository->save($usedCommission);
 
         // Add to users used_commissions_list
-        $user->addUsedFreeFeeCommission(self::type(), $usedCommissionId);
+        $user->addUsedFreeFeeCommission($this->type(), $usedCommissionId);
 
         // Save user
         $this->userRepository->save($user);
@@ -150,9 +148,9 @@ class PrivateWithdrawType implements TypeAbstract
     {
         $usedWeeklyFreeFeeAmount = '0';
 
-        if ($user->hasUsedFreeFeeCommissions(self::type())) {
+        if ($user->hasUsedFreeFeeCommissions($this->type())) {
             /* @var UsedFreeCommission $usedCommission */
-            foreach ($user->getUsedCommissionsByType(self::type()) as $usedCommissionId) {
+            foreach ($user->getUsedCommissionsByType($this->type()) as $usedCommissionId) {
                 $usedCommission = $this->usedCommissionRepository->find($usedCommissionId);
 
                 if (!$usedCommission) {

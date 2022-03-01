@@ -9,7 +9,7 @@ interface TypeAbstract
     /**
      * Get user's type handler.
      */
-    public static function type(): string;
+    public function type(): string;
 
     /**
      * Handler.

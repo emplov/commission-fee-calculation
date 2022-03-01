@@ -21,7 +21,7 @@ class PrivateDepositType implements TypeAbstract
     /**
      * {@inheritDoc}
      */
-    public static function type(): string
+    public function type(): string
     {
         return 'private_deposit';
     }

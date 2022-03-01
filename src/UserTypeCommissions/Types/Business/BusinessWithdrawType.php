@@ -21,7 +21,7 @@ class BusinessWithdrawType implements TypeAbstract
     /**
      * {@inheritDoc}
      */
-    public static function type(): string
+    public function type(): string
     {
         return 'business_withdraw';
     }
