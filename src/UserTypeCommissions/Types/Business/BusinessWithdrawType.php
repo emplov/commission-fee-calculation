@@ -12,8 +12,8 @@ use CommissionFeeCalculation\UserTypeCommissions\Contracts\TypeAbstract;
 class BusinessWithdrawType implements TypeAbstract
 {
     public function __construct(
-        private Config $config,
         private Math $math,
+        private Config $config,
         private NumberFormat $numberFormat,
     ) {
     }
@@ -21,7 +21,7 @@ class BusinessWithdrawType implements TypeAbstract
     /**
      * {@inheritDoc}
      */
-    public static function type(): string
+    public function type(): string
     {
         return 'business_withdraw';
     }

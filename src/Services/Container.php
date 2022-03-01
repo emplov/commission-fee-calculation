@@ -5,12 +5,18 @@ declare(strict_types=1);
 namespace CommissionFeeCalculation\Services;
 
 use Closure;
+use CommissionFeeCalculation\Repositories\Persistence\InMemoryPersistence;
+use CommissionFeeCalculation\Repositories\UsedCommissionRepository;
+use CommissionFeeCalculation\Repositories\UserRepository;
+use CommissionFeeCalculation\Services\Converter\Converter;
+use CommissionFeeCalculation\Services\Converter\CurrencyConverter;
+use CommissionFeeCalculation\UserTypeCommissions\Types\Business\BusinessDepositType;
+use CommissionFeeCalculation\UserTypeCommissions\Types\Business\BusinessWithdrawType;
+use CommissionFeeCalculation\UserTypeCommissions\Types\Private\PrivateDepositType;
+use CommissionFeeCalculation\UserTypeCommissions\Types\Private\PrivateWithdrawType;
 use Exception;
-use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
-use ReflectionClass;
-use ReflectionException;
+use Symfony\Component\Yaml\Yaml;
 
 class Container implements ContainerInterface
 {
@@ -63,25 +69,78 @@ class Container implements ContainerInterface
         );
     }
 
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws ReflectionException
-     * @throws NotFoundExceptionInterface
-     */
-    public function make(string $class)
+    public function init(): void
     {
-        $reflectionClass = new ReflectionClass($class);
+        $this->addDefinitions([
+            Math::class => new Math(),
 
-        $constructor = $reflectionClass->getConstructor();
+            File::class => new File(),
 
-        $parameters = [];
+            NumberFormat::class => static function (ContainerInterface $container) {
+                return new NumberFormat($container->get(Math::class));
+            },
 
-        foreach ($constructor->getParameters() as $parameter) {
-            if (!$parameter->isOptional()) {
-                $parameters[$parameter->getName()] = $this->get($parameter->getType()->getName());
-            }
-        }
+            UserRepository::class => static function (ContainerInterface $container) {
+                return new UserRepository(new InMemoryPersistence());
+            },
 
-        return new $class(...$parameters);
+            UsedCommissionRepository::class => static function (ContainerInterface $container) {
+                return new UsedCommissionRepository(new InMemoryPersistence());
+            },
+
+            Config::class => static function (ContainerInterface $container) {
+                $config = new Config();
+
+                $config->setConfig(Yaml::parseFile(__DIR__.'/../config.yml'));
+
+                return $config;
+            },
+
+            Converter::class => static function (ContainerInterface $container) {
+                $converter = new CurrencyConverter();
+                $converter->fetchRates();
+
+                return $converter;
+            },
+
+            Commission::class => static function (ContainerInterface $container) {
+                return new Commission($container->get(UserRepository::class), $container->get(Config::class));
+            },
+
+            BusinessDepositType::class => static function (ContainerInterface $container) {
+                return new BusinessDepositType(
+                    $container->get(Math::class),
+                    $container->get(Config::class),
+                    $container->get(NumberFormat::class),
+                );
+            },
+
+            BusinessWithdrawType::class => static function (ContainerInterface $container) {
+                return new BusinessWithdrawType(
+                    $container->get(Math::class),
+                    $container->get(Config::class),
+                    $container->get(NumberFormat::class),
+                );
+            },
+
+            PrivateDepositType::class => static function (ContainerInterface $container) {
+                return new PrivateDepositType(
+                    $container->get(Math::class),
+                    $container->get(Config::class),
+                    $container->get(NumberFormat::class),
+                );
+            },
+
+            PrivateWithdrawType::class => static function (ContainerInterface $container) {
+                return new PrivateWithdrawType(
+                    $container->get(UserRepository::class),
+                    $container->get(UsedCommissionRepository::class),
+                    $container->get(Config::class),
+                    $container->get(Converter::class),
+                    $container->get(Math::class),
+                    $container->get(NumberFormat::class),
+                );
+            },
+        ]);
     }
 }
