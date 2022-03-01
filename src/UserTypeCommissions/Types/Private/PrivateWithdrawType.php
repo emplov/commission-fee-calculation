@@ -20,7 +20,7 @@ class PrivateWithdrawType implements TypeAbstract
 {
     public function __construct(
         private UserRepository $userRepository,
-        private TransactionRepository $usedCommissionRepository,
+        private TransactionRepository $transactionRepository,
         private Config $config,
         private Converter $convert,
         private Math $math,
@@ -71,7 +71,7 @@ class PrivateWithdrawType implements TypeAbstract
         $usedFreeFee = $this->getUsedFreeFee($usedWeeklyFreeFeeAmount, $weeklyFreeFeeAmount, $convertedAmount);
 
         // Save transaction
-        $usedCommission = new Transaction(
+        $transaction = new Transaction(
             $user->getUserID(),
             $this->type(),
             $date,
@@ -81,10 +81,10 @@ class PrivateWithdrawType implements TypeAbstract
             $amount,
         );
 
-        $usedCommissionId = $this->usedCommissionRepository->save($usedCommission);
+        $transactionId = $this->transactionRepository->save($transaction);
 
         // Add to users used_commissions_list
-        $user->addTransaction($this->type(), $usedCommissionId);
+        $user->addTransaction($this->type(), $transactionId);
 
         // Save user
         $this->userRepository->save($user);
@@ -164,7 +164,7 @@ class PrivateWithdrawType implements TypeAbstract
         if ($user->hasTransactions($this->type())) {
             /* @var Transaction $usedCommission */
             foreach ($user->getTransactionsByType($this->type()) as $usedCommissionId) {
-                $usedCommission = $this->usedCommissionRepository->find($usedCommissionId);
+                $usedCommission = $this->transactionRepository->find($usedCommissionId);
 
                 if (!$usedCommission) {
                     throw new ScriptException('Commission with '.$usedCommissionId.' not exists.');
